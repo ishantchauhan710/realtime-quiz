@@ -32,6 +32,57 @@ export class AuthAccessTokenSchema extends BaseModel {
   declare updatedAt: DateTime | null
 }
 
+export class OptionSchema extends BaseModel {
+  static $columns = ['createdAt', 'id', 'isCorrect', 'questionId', 'text', 'updatedAt'] as const
+  $columns = OptionSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare isCorrect: boolean | null
+  @column()
+  declare questionId: number | null
+  @column()
+  declare text: string | null
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
+export class QuestionSchema extends BaseModel {
+  static $columns = ['createdAt', 'id', 'question', 'quizId', 'updatedAt'] as const
+  $columns = QuestionSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare question: string
+  @column()
+  declare quizId: number | null
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
+export class QuizSchema extends BaseModel {
+  static $columns = ['category', 'createdAt', 'description', 'id', 'timeLimit', 'title', 'updatedAt'] as const
+  $columns = QuizSchema.$columns
+  @column()
+  declare category: string | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare description: string | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare timeLimit: number | null
+  @column()
+  declare title: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
 export class RefreshTokenSchema extends BaseModel {
   static $columns = ['createdAt', 'id', 'token', 'userId'] as const
   $columns = RefreshTokenSchema.$columns

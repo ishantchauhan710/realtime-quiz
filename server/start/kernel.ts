@@ -8,6 +8,7 @@
 |
 */
 
+import SeedService from '#services/seed_service'
 import router from '@adonisjs/core/services/router'
 import server from '@adonisjs/core/services/server'
 
@@ -47,3 +48,6 @@ router.use([
 export const middleware = router.named({
   auth: () => import('#middleware/auth_middleware'),
 })
+
+
+await SeedService.seedQuizzesIfEmpty()

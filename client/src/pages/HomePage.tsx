@@ -80,11 +80,8 @@ export default function Home() {
 
                 {/* Meta */}
                 <div className="flex items-center gap-4 mt-4 text-xs text-gray-500">
-                  {quiz.questions?.length && (
-                    <span>🧠 {quiz.questions.length} Questions</span>
-                  )}
                   {quiz.timeLimit && (
-                    <span>⏱ {quiz.timeLimit}s</span>
+                    <span>⏱ {quiz.timeLimit} sec</span>
                   )}
                 </div>
               </div>
