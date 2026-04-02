@@ -49,6 +49,29 @@ export class OptionSchema extends BaseModel {
   declare updatedAt: DateTime | null
 }
 
+export class QuestionProgressSchema extends BaseModel {
+  static $columns = ['answeredAt', 'createdAt', 'id', 'isCorrect', 'questionId', 'selectedOption', 'sessionPlayerId', 'timeTaken', 'updatedAt'] as const
+  $columns = QuestionProgressSchema.$columns
+  @column.dateTime()
+  declare answeredAt: DateTime | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare isCorrect: boolean | null
+  @column()
+  declare questionId: number
+  @column()
+  declare selectedOption: string | null
+  @column()
+  declare sessionPlayerId: number
+  @column()
+  declare timeTaken: number | null
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
 export class QuestionSchema extends BaseModel {
   static $columns = ['createdAt', 'id', 'question', 'quizId', 'updatedAt'] as const
   $columns = QuestionSchema.$columns
@@ -94,6 +117,48 @@ export class RefreshTokenSchema extends BaseModel {
   declare token: string
   @column()
   declare userId: number | null
+}
+
+export class SessionPlayerSchema extends BaseModel {
+  static $columns = ['createdAt', 'currentQuestionIndex', 'finishedAt', 'id', 'score', 'sessionId', 'updatedAt', 'userId'] as const
+  $columns = SessionPlayerSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare currentQuestionIndex: number | null
+  @column.dateTime()
+  declare finishedAt: DateTime | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare score: number | null
+  @column()
+  declare sessionId: number | null
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare userId: number | null
+}
+
+export class SessionSchema extends BaseModel {
+  static $columns = ['createdAt', 'endTime', 'id', 'mode', 'quizId', 'startTime', 'status', 'updatedAt'] as const
+  $columns = SessionSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column.dateTime()
+  declare endTime: DateTime | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare mode: string
+  @column()
+  declare quizId: number
+  @column.dateTime()
+  declare startTime: DateTime | null
+  @column()
+  declare status: string | null
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
 }
 
 export class UserSchema extends BaseModel {

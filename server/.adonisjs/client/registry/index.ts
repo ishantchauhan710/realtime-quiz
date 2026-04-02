@@ -72,6 +72,18 @@ const routes = {
     tokens: [{"old":"/quizzes/:id","type":0,"val":"quizzes","end":""},{"old":"/quizzes/:id","type":1,"val":"id","end":""}],
     types: placeholder as Registry['quizzes.show']['types'],
   },
+  'session.create_solo': {
+    methods: ["POST"],
+    pattern: '/sessions/solo',
+    tokens: [{"old":"/sessions/solo","type":0,"val":"sessions","end":""},{"old":"/sessions/solo","type":0,"val":"solo","end":""}],
+    types: placeholder as Registry['session.create_solo']['types'],
+  },
+  'session.answer': {
+    methods: ["POST"],
+    pattern: '/sessions/:id/answer',
+    tokens: [{"old":"/sessions/:id/answer","type":0,"val":"sessions","end":""},{"old":"/sessions/:id/answer","type":1,"val":"id","end":""},{"old":"/sessions/:id/answer","type":0,"val":"answer","end":""}],
+    types: placeholder as Registry['session.answer']['types'],
+  },
 } as const satisfies Record<string, AdonisEndpoint>
 
 export { routes }

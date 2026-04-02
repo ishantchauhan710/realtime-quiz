@@ -15,6 +15,8 @@ export type ScannedRoutes = {
     'auth.upload_avatar': { paramsTuple?: []; params?: {} }
     'quizzes.index': { paramsTuple?: []; params?: {} }
     'quizzes.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'session.create_solo': { paramsTuple?: []; params?: {} }
+    'session.answer': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   GET: {
     'oauth.redirect': { paramsTuple?: []; params?: {} }
@@ -36,6 +38,8 @@ export type ScannedRoutes = {
     'auth.refresh': { paramsTuple?: []; params?: {} }
     'auth.logout': { paramsTuple?: []; params?: {} }
     'auth.upload_avatar': { paramsTuple?: []; params?: {} }
+    'session.create_solo': { paramsTuple?: []; params?: {} }
+    'session.answer': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   PUT: {
     'auth.update_profile': { paramsTuple?: []; params?: {} }

@@ -19,4 +19,8 @@ export interface ApiDefinition {
     index: typeof routes['quizzes.index']
     show: typeof routes['quizzes.show']
   }
+  session: {
+    createSolo: typeof routes['session.create_solo']
+    answer: typeof routes['session.answer']
+  }
 }

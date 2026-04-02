@@ -2,8 +2,10 @@ import { useEffect, useState } from "react";
 import { getToken, clearToken } from "../lib/auth";
 import PageContainer from "./PageContainer";
 import { API } from "../lib/api";
+import { useNavigate } from "react-router-dom";
 
 export default function Home() {
+  const navigate = useNavigate();
 
   const [quizzes, setQuizzes] = useState<any[]>([]);
   const [quizLoading, setQuizLoading] = useState(true);
@@ -50,6 +52,7 @@ export default function Home() {
   }
 
 
+
   return (<PageContainer onLogout={handleLogout}>
     <div className="mb-8">
       <h1 className="text-3xl font-semibold">Home</h1>
@@ -90,7 +93,8 @@ export default function Home() {
               <button
                 className="mt-6 w-full py-2.5 rounded-xl cursor-pointer bg-white text-black text-sm font-semibold hover:bg-gray-200 transition-all"
                 onClick={() => {
-                  console.log("Start quiz", quiz.id);
+                  // console.log("Start quiz", quiz.id);
+                  navigate(`/quiz/${quiz.id}`);
                 }}
               >
                 Start Quiz →

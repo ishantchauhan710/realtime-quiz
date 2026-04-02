@@ -26,6 +26,13 @@ router.group(() => {
   router.get('/quizzes', '#controllers/quizzes_controller.index')
   router.get('/quizzes/:id', '#controllers/quizzes_controller.show')
 
+  router
+    .post('/sessions/solo', '#controllers/session_controller.createSolo')
+
+  router
+    .post('/sessions/:id/answer', '#controllers/session_controller.answer')
+
+
 }).use(jwt.handle)
 
 router.get('/uploads/*', async ({ params, response }) => {

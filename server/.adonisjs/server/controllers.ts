@@ -7,4 +7,5 @@ export const controllers = {
   Auth: () => import('#controllers/auth_controller'),
   Oauth: () => import('#controllers/oauth_controller'),
   Quizzes: () => import('#controllers/quizzes_controller'),
+  Session: () => import('#controllers/session_controller'),
 }

@@ -139,4 +139,28 @@ export interface Registry {
       errorResponse: unknown
     }
   }
+  'session.create_solo': {
+    methods: ["POST"]
+    pattern: '/sessions/solo'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'session.answer': {
+    methods: ["POST"]
+    pattern: '/sessions/:id/answer'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
 }
