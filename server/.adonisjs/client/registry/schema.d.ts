@@ -67,4 +67,28 @@ export interface Registry {
       errorResponse: unknown
     }
   }
+  'oauth.redirect': {
+    methods: ["GET","HEAD"]
+    pattern: '/auth/google'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'oauth.callback': {
+    methods: ["GET","HEAD"]
+    pattern: '/auth/google/callback'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
 }

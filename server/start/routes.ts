@@ -10,3 +10,6 @@ router.post('/login', '#controllers/auth_controller.login')
 router.post('/refresh', '#controllers/auth_controller.refresh')
 router.post('/logout', '#controllers/auth_controller.logout')
 router.get('/me', '#controllers/auth_controller.me').use(new JwtMiddleware().handle)
+
+router.get('/auth/google', '#controllers/oauth_controller.redirect')
+router.get('/auth/google/callback', '#controllers/oauth_controller.callback')

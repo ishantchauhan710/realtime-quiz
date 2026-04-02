@@ -9,12 +9,18 @@ export type ScannedRoutes = {
     'auth.refresh': { paramsTuple?: []; params?: {} }
     'auth.logout': { paramsTuple?: []; params?: {} }
     'auth.me': { paramsTuple?: []; params?: {} }
+    'oauth.redirect': { paramsTuple?: []; params?: {} }
+    'oauth.callback': { paramsTuple?: []; params?: {} }
   }
   GET: {
     'auth.me': { paramsTuple?: []; params?: {} }
+    'oauth.redirect': { paramsTuple?: []; params?: {} }
+    'oauth.callback': { paramsTuple?: []; params?: {} }
   }
   HEAD: {
     'auth.me': { paramsTuple?: []; params?: {} }
+    'oauth.redirect': { paramsTuple?: []; params?: {} }
+    'oauth.callback': { paramsTuple?: []; params?: {} }
   }
   POST: {
     'auth.register': { paramsTuple?: []; params?: {} }

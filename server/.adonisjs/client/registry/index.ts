@@ -36,6 +36,18 @@ const routes = {
     tokens: [{"old":"/me","type":0,"val":"me","end":""}],
     types: placeholder as Registry['auth.me']['types'],
   },
+  'oauth.redirect': {
+    methods: ["GET","HEAD"],
+    pattern: '/auth/google',
+    tokens: [{"old":"/auth/google","type":0,"val":"auth","end":""},{"old":"/auth/google","type":0,"val":"google","end":""}],
+    types: placeholder as Registry['oauth.redirect']['types'],
+  },
+  'oauth.callback': {
+    methods: ["GET","HEAD"],
+    pattern: '/auth/google/callback',
+    tokens: [{"old":"/auth/google/callback","type":0,"val":"auth","end":""},{"old":"/auth/google/callback","type":0,"val":"google","end":""},{"old":"/auth/google/callback","type":0,"val":"callback","end":""}],
+    types: placeholder as Registry['oauth.callback']['types'],
+  },
 } as const satisfies Record<string, AdonisEndpoint>
 
 export { routes }

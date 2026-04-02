@@ -9,4 +9,8 @@ export interface ApiDefinition {
     logout: typeof routes['auth.logout']
     me: typeof routes['auth.me']
   }
+  oauth: {
+    redirect: typeof routes['oauth.redirect']
+    callback: typeof routes['oauth.callback']
+  }
 }
