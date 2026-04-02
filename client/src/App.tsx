@@ -8,6 +8,7 @@ import Home from "./pages/HomePage";
 import GoogleSuccess from "./pages/AuthSuccess";
 import Profile from "./pages/ProfilePage";
 import QuizPage from "./pages/QuizPage";
+import MultiplayerEntry from "./pages/MultiplayerQuiz";
 
 const API = "http://localhost:3333";
 
@@ -84,11 +85,23 @@ export default function App() {
           }
         />
 
+        
+        <Route
+          path="/multiplayer"
+          element={
+            <Protected>
+              <MultiplayerEntry />
+            </Protected>
+          }
+        />
+
+
+
         <Route
           path="/profile"
           element={
             <Protected>
-              <Profile setUser={setUser} />
+              <Profile setUser={setUser} mainUser={user} />
             </Protected>
           }
         />
@@ -102,6 +115,7 @@ export default function App() {
             </Protected>
           }
         />
+        
 
         {/* OAuth */}
         <Route

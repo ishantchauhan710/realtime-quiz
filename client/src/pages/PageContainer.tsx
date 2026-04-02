@@ -12,7 +12,8 @@ export default function PageContainer({
     const location = useLocation();
 
     const menus = [
-        { label: "Home", path: "/home" },
+        { label: "Solo Quiz", path: "/home" },
+        { label: "Multiplayer Quiz", path: "/multiplayer" },
         { label: "Profile", path: "/profile" },
     ];
 

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { getToken, clearToken } from "../lib/auth";
 import PageContainer from "./PageContainer";
 
-export default function Profile({ setUser }: any) {
+export default function Profile({ setUser, mainUser }: any) {
   const [user, setLocalUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [name, setName] = useState("");
@@ -12,46 +12,16 @@ export default function Profile({ setUser }: any) {
 
   const API = "http://localhost:3333";
 
-  // 🔥 Fetch user
-  const fetchMe = async () => {
-    const token = getToken();
-
-    if (!token) {
-      window.location.href = "/";
-      return;
-    }
-
-    try {
-      const res = await fetch(API + "/me", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        clearToken();
-        window.location.href = "/";
-        return;
-      }
-
-      setLocalUser(data);
-      setUser(data);
-      setName(data.name);
-    } catch {
-      clearToken();
-      window.location.href = "/";
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    fetchMe();
-  }, []);
+    setUser(mainUser);
+    setLocalUser(mainUser);
+    setName(mainUser?.name || "");
+    setLoading(false);
+    setPreview(null);
+  }, [mainUser, setUser]);
 
-  // 🔥 Avatar helper
+
+  // Avatar helper
   const getAvatar = () => {
     if (preview) return preview;
 
@@ -92,7 +62,7 @@ export default function Profile({ setUser }: any) {
     }
   };
 
-  // 🖼️ Upload avatar
+  // Upload avatar
   const handleUploadAvatar = async () => {
     if (!file) return;
 
@@ -141,9 +111,7 @@ export default function Profile({ setUser }: any) {
     window.location.href = "/";
   };
 
-  if (loading) {
-    return <div className="text-white text-center mt-20">Loading...</div>;
-  }
+  
 
   return (
     <PageContainer onLogout={handleLogout}>
