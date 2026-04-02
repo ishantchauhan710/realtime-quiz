@@ -1,13 +1,73 @@
-import Auth from "./pages/AuthPage"
+// App.tsx
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { getToken, clearToken } from "./lib/auth";
+import Auth from "./pages/AuthPage";
+import Home from "./pages/HomePage";
 
+export default function App() {
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
-function App() {
+  const API = "http://localhost:3333";
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const token = getToken();
+
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const res = await fetch(API + "/me", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!res.ok) {
+          clearToken();
+          setUser(null);
+        } else {
+          const data = await res.json();
+          setUser(data);
+        }
+      } catch {
+        clearToken();
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkAuth();
+  }, []);
+
+  if (loading) return null;
 
   return (
-    <div>
-      <Auth />
-    </div>
-  )
-}
+    <BrowserRouter>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            user ? <Navigate to="/home" replace /> : <Auth setUser={setUser} />
+          }
+        />
 
-export default App
+        <Route
+          path="/home"
+          element={
+            user ? (
+              <Home setUser={setUser} />
+            ) : (
+              <Navigate to="/" replace />
+            )
+          }
+        />
+      </Routes>
+    </BrowserRouter>
+  );
+}

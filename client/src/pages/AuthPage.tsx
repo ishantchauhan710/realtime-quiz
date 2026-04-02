@@ -1,6 +1,10 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { setToken } from "../lib/auth";
 
 export default function Auth({ setUser }: any) {
+  const navigate = useNavigate();
+
   const [isLogin, setIsLogin] = useState(true);
 
   const [form, setForm] = useState({
@@ -47,9 +51,10 @@ export default function Auth({ setUser }: any) {
         return;
       }
 
-      if (data.token) {
-        localStorage.setItem("token", data.token.token || data.token);
+      if (data.accessToken) {
+        setToken(data.accessToken);
         setUser(data.user);
+        navigate("/home");
       }
 
       setSuccess(isLogin ? "Login successful" : "Account created");
@@ -59,7 +64,7 @@ export default function Auth({ setUser }: any) {
       setLoading(false);
     }
   };
-``
+
   const handleGuestLogin = async () => {
     setLoading(true);
     setError("");
@@ -77,9 +82,9 @@ export default function Auth({ setUser }: any) {
         return;
       }
 
-      localStorage.setItem("token", data.token.token || data.token);
+      setToken(data.accessToken || data.token);
       setUser(data.user);
-      setSuccess("Logged in as guest");
+      navigate("/home");
     } catch {
       setError("Network error");
     } finally {
