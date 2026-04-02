@@ -15,6 +15,12 @@ export default class User extends BaseModel {
   @column()
   declare name: string
 
+  @column()
+  declare profilePictureUrl: string | null
+
+  @column()
+  declare authenticationType: 'email' | 'google'
+
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 
@@ -23,8 +29,8 @@ export default class User extends BaseModel {
 
   @beforeSave()
   static async hashPassword(user: User) {
-    if (user.$dirty.password) { 
-      user.password = await Hash.make(user.password) 
+    if (user.$dirty.password && user.password) {
+      user.password = await Hash.make(user.password)
     }
   }
 }

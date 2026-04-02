@@ -46,8 +46,10 @@ export class RefreshTokenSchema extends BaseModel {
 }
 
 export class UserSchema extends BaseModel {
-  static $columns = ['createdAt', 'email', 'id', 'name', 'password', 'updatedAt'] as const
+  static $columns = ['authenticationType', 'createdAt', 'email', 'id', 'name', 'password', 'profilePictureUrl', 'updatedAt'] as const
   $columns = UserSchema.$columns
+  @column()
+  declare authenticationType: string | null
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime | null
   @column()
@@ -58,6 +60,8 @@ export class UserSchema extends BaseModel {
   declare name: string | null
   @column({ serializeAs: null })
   declare password: string
+  @column()
+  declare profilePictureUrl: string | null
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime | null
 }

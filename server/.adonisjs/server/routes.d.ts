@@ -11,6 +11,8 @@ export type ScannedRoutes = {
     'auth.me': { paramsTuple?: []; params?: {} }
     'oauth.redirect': { paramsTuple?: []; params?: {} }
     'oauth.callback': { paramsTuple?: []; params?: {} }
+    'auth.update_profile': { paramsTuple?: []; params?: {} }
+    'auth.upload_avatar': { paramsTuple?: []; params?: {} }
   }
   GET: {
     'auth.me': { paramsTuple?: []; params?: {} }
@@ -27,6 +29,10 @@ export type ScannedRoutes = {
     'auth.login': { paramsTuple?: []; params?: {} }
     'auth.refresh': { paramsTuple?: []; params?: {} }
     'auth.logout': { paramsTuple?: []; params?: {} }
+    'auth.upload_avatar': { paramsTuple?: []; params?: {} }
+  }
+  PUT: {
+    'auth.update_profile': { paramsTuple?: []; params?: {} }
   }
 }
 declare module '@adonisjs/core/types/http' {

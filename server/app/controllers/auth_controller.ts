@@ -2,6 +2,8 @@ import type { HttpContext } from '@adonisjs/core/http'
 import { registerValidator, loginValidator } from '#validators/auth'
 import AuthService from '#services/auth_service'
 import { handleError } from '#exceptions/handle_error'
+import { unlink } from 'node:fs/promises'
+import app from '@adonisjs/core/services/app'
 
 const authService = new AuthService()
 
@@ -58,6 +60,73 @@ export default class AuthController {
       id: user.id,
       email: user.email,
       name: user.name,
+      profilePictureUrl: user.profilePictureUrl,
+    })
+  }
+
+  async updateProfile({ request, response }: HttpContext) {
+    const user = request.user
+
+    if (!user) {
+      return response.unauthorized({ error: 'Unauthorized' })
+    }
+
+    const { name } = request.only(['name'])
+
+    if (name) {
+      user.name = name.trim()
+    }
+
+    await user.save()
+
+    return response.ok({
+      message: 'Profile updated',
+      user,
+    })
+  }
+
+  async uploadAvatar({ request, response }: HttpContext) {
+    const user = request.user
+
+    if (!user) {
+      return response.unauthorized({ error: 'Unauthorized' })
+    }
+
+    const avatar = request.file('avatar', {
+      size: '2mb',
+      extnames: ['jpg', 'png', 'jpeg'],
+    })
+
+    if (!avatar) {
+      return response.badRequest({ error: 'No file uploaded' })
+    }
+
+    const fileName = `${Date.now()}.${avatar.extname}`
+
+    await avatar.move(app.makePath('tmp/uploads/avatars'), {
+      name: fileName,
+    })
+
+    if (!avatar.isValid) {
+      return response.badRequest({ error: avatar.errors })
+    }
+
+    if (user.profilePictureUrl?.startsWith('/uploads')) {
+      try {
+        const oldPath = app.makePath(
+          'tmp/uploads',
+          ...user.profilePictureUrl.replace('/uploads/', '').split('/')
+        )
+        await unlink(oldPath)
+      } catch { }
+    }
+
+    user.profilePictureUrl = `/uploads/avatars/${fileName}`
+    await user.save()
+
+    return response.ok({
+      message: 'Avatar updated',
+      avatar: user.profilePictureUrl,
     })
   }
 }

@@ -8,6 +8,8 @@ export interface ApiDefinition {
     refresh: typeof routes['auth.refresh']
     logout: typeof routes['auth.logout']
     me: typeof routes['auth.me']
+    updateProfile: typeof routes['auth.update_profile']
+    uploadAvatar: typeof routes['auth.upload_avatar']
   }
   oauth: {
     redirect: typeof routes['oauth.redirect']

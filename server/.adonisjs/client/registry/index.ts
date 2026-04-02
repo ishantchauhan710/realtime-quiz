@@ -48,6 +48,18 @@ const routes = {
     tokens: [{"old":"/auth/google/callback","type":0,"val":"auth","end":""},{"old":"/auth/google/callback","type":0,"val":"google","end":""},{"old":"/auth/google/callback","type":0,"val":"callback","end":""}],
     types: placeholder as Registry['oauth.callback']['types'],
   },
+  'auth.update_profile': {
+    methods: ["PUT"],
+    pattern: '/profile',
+    tokens: [{"old":"/profile","type":0,"val":"profile","end":""}],
+    types: placeholder as Registry['auth.update_profile']['types'],
+  },
+  'auth.upload_avatar': {
+    methods: ["POST"],
+    pattern: '/profile/avatar',
+    tokens: [{"old":"/profile/avatar","type":0,"val":"profile","end":""},{"old":"/profile/avatar","type":0,"val":"avatar","end":""}],
+    types: placeholder as Registry['auth.upload_avatar']['types'],
+  },
 } as const satisfies Record<string, AdonisEndpoint>
 
 export { routes }

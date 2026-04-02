@@ -91,4 +91,28 @@ export interface Registry {
       errorResponse: unknown
     }
   }
+  'auth.update_profile': {
+    methods: ["PUT"]
+    pattern: '/profile'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'auth.upload_avatar': {
+    methods: ["POST"]
+    pattern: '/profile/avatar'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
 }
