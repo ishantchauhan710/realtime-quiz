@@ -5,6 +5,7 @@ import { getToken, clearToken } from "./lib/auth";
 import Auth from "./pages/AuthPage";
 import Home from "./pages/HomePage";
 import GoogleSuccess from "./pages/AuthSuccess";
+import Profile from "./pages/ProfilePage";
 
 export default function App() {
   const [user, setUser] = useState<any>(null);
@@ -68,6 +69,19 @@ export default function App() {
             )
           }
         />
+
+        <Route
+          path="/profile"
+          element={
+            user ? (
+              <Profile setUser={setUser} />
+            ) : (
+              <Navigate to="/" replace />
+            )
+          }
+        />
+``
+
 
         <Route path="/auth/success" element={<GoogleSuccess setUser={setUser} />} />
         <Route path="/oauth-success" element={<GoogleSuccess setUser={setUser} />} />
