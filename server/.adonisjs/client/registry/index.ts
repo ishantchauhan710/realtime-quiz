@@ -24,18 +24,6 @@ const routes = {
     tokens: [{"old":"/refresh","type":0,"val":"refresh","end":""}],
     types: placeholder as Registry['auth.refresh']['types'],
   },
-  'auth.logout': {
-    methods: ["POST"],
-    pattern: '/logout',
-    tokens: [{"old":"/logout","type":0,"val":"logout","end":""}],
-    types: placeholder as Registry['auth.logout']['types'],
-  },
-  'auth.me': {
-    methods: ["GET","HEAD"],
-    pattern: '/me',
-    tokens: [{"old":"/me","type":0,"val":"me","end":""}],
-    types: placeholder as Registry['auth.me']['types'],
-  },
   'oauth.redirect': {
     methods: ["GET","HEAD"],
     pattern: '/auth/google',
@@ -47,6 +35,18 @@ const routes = {
     pattern: '/auth/google/callback',
     tokens: [{"old":"/auth/google/callback","type":0,"val":"auth","end":""},{"old":"/auth/google/callback","type":0,"val":"google","end":""},{"old":"/auth/google/callback","type":0,"val":"callback","end":""}],
     types: placeholder as Registry['oauth.callback']['types'],
+  },
+  'auth.logout': {
+    methods: ["POST"],
+    pattern: '/logout',
+    tokens: [{"old":"/logout","type":0,"val":"logout","end":""}],
+    types: placeholder as Registry['auth.logout']['types'],
+  },
+  'auth.me': {
+    methods: ["GET","HEAD"],
+    pattern: '/me',
+    tokens: [{"old":"/me","type":0,"val":"me","end":""}],
+    types: placeholder as Registry['auth.me']['types'],
   },
   'auth.update_profile': {
     methods: ["PUT"],

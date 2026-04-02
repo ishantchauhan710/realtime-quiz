@@ -2,13 +2,10 @@ import type { HttpContext } from '@adonisjs/core/http'
 import { registerValidator, loginValidator } from '#validators/auth'
 import AuthService from '#services/auth_service'
 import { handleError } from '#exceptions/handle_error'
-import { unlink } from 'node:fs/promises'
-import app from '@adonisjs/core/services/app'
 
 const authService = new AuthService()
 
 export default class AuthController {
-
   async register({ request, response }: HttpContext) {
     try {
       const payload = await request.validateUsing(registerValidator)
@@ -50,11 +47,7 @@ export default class AuthController {
   }
 
   async me({ request, response }: HttpContext) {
-    const user = request.user
-
-    if (!user) {
-      return response.unauthorized({ error: 'Unauthorized' })
-    }
+    const user = request.user!
 
     return response.ok({
       id: user.id,
@@ -65,68 +58,31 @@ export default class AuthController {
   }
 
   async updateProfile({ request, response }: HttpContext) {
-    const user = request.user
-
-    if (!user) {
-      return response.unauthorized({ error: 'Unauthorized' })
+    try {
+      const user = request.user!
+      const data = await authService.updateProfile(user, request.only(['name']))
+      return response.ok(data)
+    } catch (error) {
+      return handleError(error, response)
     }
-
-    const { name } = request.only(['name'])
-
-    if (name) {
-      user.name = name.trim()
-    }
-
-    await user.save()
-
-    return response.ok({
-      message: 'Profile updated',
-      user,
-    })
   }
 
   async uploadAvatar({ request, response }: HttpContext) {
-    const user = request.user
+    try {
+      const user = request.user!
+      const avatar = request.file('avatar', {
+        size: '2mb',
+        extnames: ['jpg', 'png', 'jpeg'],
+      })
 
-    if (!user) {
-      return response.unauthorized({ error: 'Unauthorized' })
+      if (!avatar) {
+        return response.badRequest({ error: 'No file uploaded' })
+      }
+
+      const data = await authService.uploadAvatar(user, avatar)
+      return response.ok(data)
+    } catch (error) {
+      return handleError(error, response)
     }
-
-    const avatar = request.file('avatar', {
-      size: '2mb',
-      extnames: ['jpg', 'png', 'jpeg'],
-    })
-
-    if (!avatar) {
-      return response.badRequest({ error: 'No file uploaded' })
-    }
-
-    const fileName = `${Date.now()}.${avatar.extname}`
-
-    await avatar.move(app.makePath('tmp/uploads/avatars'), {
-      name: fileName,
-    })
-
-    if (!avatar.isValid) {
-      return response.badRequest({ error: avatar.errors })
-    }
-
-    if (user.profilePictureUrl?.startsWith('/uploads')) {
-      try {
-        const oldPath = app.makePath(
-          'tmp/uploads',
-          ...user.profilePictureUrl.replace('/uploads/', '').split('/')
-        )
-        await unlink(oldPath)
-      } catch { }
-    }
-
-    user.profilePictureUrl = `/uploads/avatars/${fileName}`
-    await user.save()
-
-    return response.ok({
-      message: 'Avatar updated',
-      avatar: user.profilePictureUrl,
-    })
   }
 }

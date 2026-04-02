@@ -43,30 +43,6 @@ export interface Registry {
       errorResponse: unknown
     }
   }
-  'auth.logout': {
-    methods: ["POST"]
-    pattern: '/logout'
-    types: {
-      body: {}
-      paramsTuple: []
-      params: {}
-      query: {}
-      response: unknown
-      errorResponse: unknown
-    }
-  }
-  'auth.me': {
-    methods: ["GET","HEAD"]
-    pattern: '/me'
-    types: {
-      body: {}
-      paramsTuple: []
-      params: {}
-      query: {}
-      response: unknown
-      errorResponse: unknown
-    }
-  }
   'oauth.redirect': {
     methods: ["GET","HEAD"]
     pattern: '/auth/google'
@@ -82,6 +58,30 @@ export interface Registry {
   'oauth.callback': {
     methods: ["GET","HEAD"]
     pattern: '/auth/google/callback'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'auth.logout': {
+    methods: ["POST"]
+    pattern: '/logout'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'auth.me': {
+    methods: ["GET","HEAD"]
+    pattern: '/me'
     types: {
       body: {}
       paramsTuple: []
