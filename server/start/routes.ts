@@ -32,6 +32,8 @@ router.group(() => {
   router
     .post('/sessions/:id/answer', '#controllers/session_controller.answer')
 
+  router.post('/sessions/multiplayer', '#controllers/session_controller.createMultiplayer')
+  router.post('/sessions/:id/join', '#controllers/session_controller.joinMultiplayer')
 
 }).use(jwt.handle)
 

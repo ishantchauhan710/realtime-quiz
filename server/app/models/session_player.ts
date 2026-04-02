@@ -3,6 +3,7 @@ import { BaseModel, column, belongsTo, hasMany } from '@adonisjs/lucid/orm'
 import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations'
 import Session from './session.ts'
 import QuestionProgress from './question_progress.ts'
+import User from './user.ts'
 
 export default class SessionPlayer extends BaseModel {
   @column({ isPrimary: true })
@@ -34,4 +35,7 @@ export default class SessionPlayer extends BaseModel {
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime
+
+  @belongsTo(() => User)
+  declare user: BelongsTo<typeof User>
 }

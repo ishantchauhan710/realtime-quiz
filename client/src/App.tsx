@@ -9,6 +9,7 @@ import GoogleSuccess from "./pages/AuthSuccess";
 import Profile from "./pages/ProfilePage";
 import QuizPage from "./pages/QuizPage";
 import MultiplayerEntry from "./pages/MultiplayerQuiz";
+import MultiplayerRoom from "./pages/MultiplayerRoom";
 
 const API = "http://localhost:3333";
 
@@ -85,7 +86,7 @@ export default function App() {
           }
         />
 
-        
+
         <Route
           path="/multiplayer"
           element={
@@ -95,6 +96,14 @@ export default function App() {
           }
         />
 
+        <Route
+          path="/multiplayer/:id"
+          element={
+            <Protected>
+              <MultiplayerRoom user={user} />
+            </Protected>
+          }
+        />
 
 
         <Route
@@ -115,7 +124,7 @@ export default function App() {
             </Protected>
           }
         />
-        
+
 
         {/* OAuth */}
         <Route

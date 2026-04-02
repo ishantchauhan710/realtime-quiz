@@ -84,6 +84,18 @@ const routes = {
     tokens: [{"old":"/sessions/:id/answer","type":0,"val":"sessions","end":""},{"old":"/sessions/:id/answer","type":1,"val":"id","end":""},{"old":"/sessions/:id/answer","type":0,"val":"answer","end":""}],
     types: placeholder as Registry['session.answer']['types'],
   },
+  'session.create_multiplayer': {
+    methods: ["POST"],
+    pattern: '/sessions/multiplayer',
+    tokens: [{"old":"/sessions/multiplayer","type":0,"val":"sessions","end":""},{"old":"/sessions/multiplayer","type":0,"val":"multiplayer","end":""}],
+    types: placeholder as Registry['session.create_multiplayer']['types'],
+  },
+  'session.join_multiplayer': {
+    methods: ["POST"],
+    pattern: '/sessions/:id/join',
+    tokens: [{"old":"/sessions/:id/join","type":0,"val":"sessions","end":""},{"old":"/sessions/:id/join","type":1,"val":"id","end":""},{"old":"/sessions/:id/join","type":0,"val":"join","end":""}],
+    types: placeholder as Registry['session.join_multiplayer']['types'],
+  },
 } as const satisfies Record<string, AdonisEndpoint>
 
 export { routes }

@@ -108,4 +108,68 @@ export default class SessionService {
     }
   }
 
+  static async createMultiplayerSession(userId: number, quizId: number) {
+    const session = await Session.create({
+      quizId,
+      mode: 'multiplayer',
+      status: 'waiting',
+      startTime: null,
+      endTime: null,
+    })
+
+    const player = await SessionPlayer.create({
+      sessionId: session.id,
+      userId,
+      score: 0,
+      currentQuestionIndex: 0,
+    })
+
+    return {
+      sessionId: session.id,
+      hostId: userId,
+      playerId: player.id,
+    }
+  }
+
+  static async joinMultiplayerSession(userId: number, sessionId: number) {
+    const session = await Session.findOrFail(sessionId)
+
+    if (session.mode !== 'multiplayer') {
+      throw new Error('Not a multiplayer session')
+    }
+
+    if (session.status !== 'waiting') {
+      throw new Error('Game already started')
+    }
+
+    // prevent duplicate join
+    let player = await SessionPlayer.query()
+      .where('session_id', sessionId)
+      .where('user_id', userId)
+      .first()
+
+    if (!player) {
+      player = await SessionPlayer.create({
+        sessionId,
+        userId,
+        score: 0,
+        currentQuestionIndex: 0,
+      })
+    }
+
+    return player
+  }
+
+  static async getSessionPlayers(sessionId: number) {
+    const players = await SessionPlayer.query()
+      .where('session_id', sessionId)
+      .preload('user')
+
+    return players.map((p) => ({
+      userId: p.user.id,
+      name: p.user.name,
+      avatar: p.user.profilePictureUrl,
+    }))
+  }
+
 }

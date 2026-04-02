@@ -3,6 +3,7 @@ import { API } from "../lib/api";
 import { getToken } from "../lib/auth";
 import { useNavigate } from "react-router-dom";
 import PageContainer from "./PageContainer";
+import { socket } from "../lib/socket";
 
 export default function MultiplayerEntry() {
     const navigate = useNavigate();
@@ -14,6 +15,18 @@ export default function MultiplayerEntry() {
     const [createdCode, setCreatedCode] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
 
+    // SOCKET CONNECT ONCE
+    useEffect(() => {
+        socket.on("connect", () => {
+            console.log("Connected:", socket.id);
+        });
+
+        return () => {
+            socket.off("connect");
+        };
+    }, []);
+
+    // FETCH QUIZZES
     useEffect(() => {
         const fetchQuizzes = async () => {
             const res = await fetch(API + "/quizzes", {
@@ -34,24 +47,30 @@ export default function MultiplayerEntry() {
 
         setLoading(true);
 
-        const res = await fetch(API + "/sessions/multiplayer", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: "Bearer " + getToken(),
-            },
-            body: JSON.stringify({ quizId: selectedQuiz }),
-        });
+        try {
+            const res = await fetch(API + "/sessions/multiplayer", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: "Bearer " + getToken(),
+                },
+                body: JSON.stringify({ quizId: selectedQuiz }),
+            });
 
-        const data = await res.json();
+            const data = await res.json();
 
-        setCreatedCode(data.sessionId); // use sessionId as code
+            // 🚀 DIRECT JOIN (no extra step)
+            navigate(`/multiplayer/${data.sessionId}`);
+        } catch (err) {
+            console.error("Create room failed", err);
+        }
+
         setLoading(false);
     };
 
     // JOIN ROOM
     const handleJoin = () => {
-        if (!joinCode) return;
+        if (!joinCode.trim()) return;
         navigate(`/multiplayer/${joinCode}`);
     };
 
@@ -60,7 +79,6 @@ export default function MultiplayerEntry() {
             <div className="min-h-screen bg-gray-950 text-white w-full flex items-start justify-center">
                 <div className="w-full max-w-xl bg-gray-900 rounded-2xl p-6 shadow-xl">
 
-                    {/* TITLE */}
                     <h2 className="text-2xl font-bold mb-6 text-center">
                         Multiplayer Mode 🎮
                     </h2>
@@ -94,10 +112,10 @@ export default function MultiplayerEntry() {
                                 {quizzes.map((q) => (
                                     <button
                                         key={q.id}
-                                        onClick={() => setSelectedQuiz(q.id)}
-                                        className={`w-full p-3 rounded-lg text-left border ${selectedQuiz === q.id
-                                                ? "bg-white text-black"
-                                                : "bg-gray-800 border-gray-700"
+                                        onClick={() => setSelectedQuiz(String(q.id))}
+                                        className={`w-full p-3 rounded-lg text-left border ${selectedQuiz === String(q.id)
+                                            ? "bg-white text-black"
+                                            : "bg-gray-800 border-gray-700"
                                             }`}
                                     >
                                         {q.title}
@@ -115,7 +133,7 @@ export default function MultiplayerEntry() {
                         </div>
                     )}
 
-                    {/* SHOW JOIN CODE */}
+                    {/* SHOW CODE */}
                     {createdCode && (
                         <div className="text-center space-y-4">
                             <h3 className="text-lg font-semibold">Room Created 🎉</h3>
@@ -145,7 +163,7 @@ export default function MultiplayerEntry() {
                             <input
                                 value={joinCode}
                                 onChange={(e) => setJoinCode(e.target.value)}
-                                placeholder="e.g. abc123"
+                                placeholder="e.g. 12"
                                 className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 outline-none"
                             />
 

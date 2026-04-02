@@ -163,4 +163,28 @@ export interface Registry {
       errorResponse: unknown
     }
   }
+  'session.create_multiplayer': {
+    methods: ["POST"]
+    pattern: '/sessions/multiplayer'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'session.join_multiplayer': {
+    methods: ["POST"]
+    pattern: '/sessions/:id/join'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
 }

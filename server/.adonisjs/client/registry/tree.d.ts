@@ -22,5 +22,7 @@ export interface ApiDefinition {
   session: {
     createSolo: typeof routes['session.create_solo']
     answer: typeof routes['session.answer']
+    createMultiplayer: typeof routes['session.create_multiplayer']
+    joinMultiplayer: typeof routes['session.join_multiplayer']
   }
 }

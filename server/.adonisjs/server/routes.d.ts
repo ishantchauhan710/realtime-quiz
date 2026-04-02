@@ -17,6 +17,8 @@ export type ScannedRoutes = {
     'quizzes.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'session.create_solo': { paramsTuple?: []; params?: {} }
     'session.answer': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'session.create_multiplayer': { paramsTuple?: []; params?: {} }
+    'session.join_multiplayer': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   GET: {
     'oauth.redirect': { paramsTuple?: []; params?: {} }
@@ -40,6 +42,8 @@ export type ScannedRoutes = {
     'auth.upload_avatar': { paramsTuple?: []; params?: {} }
     'session.create_solo': { paramsTuple?: []; params?: {} }
     'session.answer': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'session.create_multiplayer': { paramsTuple?: []; params?: {} }
+    'session.join_multiplayer': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   PUT: {
     'auth.update_profile': { paramsTuple?: []; params?: {} }
