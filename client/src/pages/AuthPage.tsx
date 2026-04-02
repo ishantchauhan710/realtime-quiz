@@ -1,57 +1,158 @@
 import { useState } from "react";
 
-export default function Auth() {
+export default function Auth({ setUser }: any) {
   const [isLogin, setIsLogin] = useState(true);
 
-  const handleGuestLogin = () => {
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
+  const API = "http://localhost:3333";
+
+  const updateField = (key: string, value: string) => {
+    setForm((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const handleSubmit = async (e: any) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    setSuccess("");
+
+    try {
+      const endpoint = isLogin ? "/login" : "/register";
+
+      const body = isLogin
+        ? { email: form.email, password: form.password }
+        : form;
+
+      const res = await fetch(API + endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || data.error) {
+        setError(data.error || "Something went wrong");
+        return;
+      }
+
+      if (data.token) {
+        localStorage.setItem("token", data.token.token || data.token);
+        setUser(data.user);
+      }
+
+      setSuccess(isLogin ? "Login successful" : "Account created");
+    } catch (error) {
+      setError(error instanceof Error ? error.message : "Network error");
+    } finally {
+      setLoading(false);
+    }
+  };
+``
+  const handleGuestLogin = async () => {
+    setLoading(true);
+    setError("");
+    setSuccess("");
+
+    try {
+      const res = await fetch(API + "/guest", {
+        method: "POST",
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || data.error) {
+        setError(data.error || "Guest login failed");
+        return;
+      }
+
+      localStorage.setItem("token", data.token.token || data.token);
+      setUser(data.user);
+      setSuccess("Logged in as guest");
+    } catch {
+      setError("Network error");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleGoogleLogin = () => {
-    
+    window.location.href = API + "/auth/google";
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-      <div className="bg-gray-800 p-8 rounded-2xl shadow-xl w-full max-w-md">
-        
-        <h2 className="text-2xl font-bold text-white text-center mb-6">
-          {isLogin ? "Login" : "Register"}
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center">
+      <div className="w-full max-w-md p-8 rounded-2xl bg-gray-900/80 backdrop-blur border border-gray-700 shadow-2xl">
+
+        <h2 className="text-3xl font-bold text-white text-center mb-6">
+          {isLogin ? "Welcome Back" : "Create Account"}
         </h2>
 
-        <form className="space-y-4">
-          
+        {error && (
+          <div className="mb-4 text-red-400 text-sm text-center">
+            {error}
+          </div>
+        )}
+
+        {success && (
+          <div className="mb-4 text-green-400 text-sm text-center">
+            {success}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-4">
           {!isLogin && (
             <input
+              value={form.name}
+              onChange={(e) => updateField("name", e.target.value)}
               type="text"
-              placeholder="Name"
-              className="w-full p-3 rounded-lg bg-gray-700 text-white outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Full Name"
+              disabled={loading}
+              className="w-full p-3 rounded-lg bg-gray-800 text-white border border-gray-700 focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
             />
           )}
 
           <input
+            value={form.email}
+            onChange={(e) => updateField("email", e.target.value)}
             type="email"
             placeholder="Email"
-            className="w-full p-3 rounded-lg bg-gray-700 text-white outline-none focus:ring-2 focus:ring-blue-500"
+            disabled={loading}
+            className="w-full p-3 rounded-lg bg-gray-800 text-white border border-gray-700 focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
           />
 
           <input
+            value={form.password}
+            onChange={(e) => updateField("password", e.target.value)}
             type="password"
             placeholder="Password"
-            className="w-full p-3 rounded-lg bg-gray-700 text-white outline-none focus:ring-2 focus:ring-blue-500"
+            disabled={loading}
+            className="w-full p-3 rounded-lg bg-gray-800 text-white border border-gray-700 focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
           />
 
           <button
-            type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 transition p-3 rounded-lg text-white font-semibold"
+            disabled={loading}
+            className="w-full bg-blue-600 hover:bg-blue-700 p-3 rounded-lg text-white font-semibold disabled:opacity-50 flex items-center justify-center"
           >
-            {isLogin ? "Login" : "Register"}
+            {loading ? "Please wait..." : isLogin ? "Login" : "Register"}
           </button>
         </form>
 
-        <div className="flex items-center my-5">
-          <div className="flex-1 h-px bg-gray-600"></div>
-          <span className="px-3 text-gray-400 text-sm">OR</span>
-          <div className="flex-1 h-px bg-gray-600"></div>
+        <div className="flex items-center my-6">
+          <div className="flex-1 h-px bg-gray-700"></div>
+          <span className="px-3 text-gray-500 text-xs">OR</span>
+          <div className="flex-1 h-px bg-gray-700"></div>
         </div>
 
         <button
@@ -68,21 +169,21 @@ export default function Auth() {
 
         <button
           onClick={handleGuestLogin}
-          className="w-full mt-3 border border-gray-600 text-white p-3 rounded-lg hover:bg-gray-700 transition"
+          disabled={loading}
+          className="w-full mt-3 text-gray-300 hover:text-white disabled:opacity-50"
         >
-          Play as Guest
+          {loading ? "Loading..." : "Play as Guest →"}
         </button>
 
-        <p className="text-gray-400 text-center mt-4">
+        <p className="text-gray-400 text-center mt-6">
           {isLogin ? "Don't have an account?" : "Already have an account?"}
           <span
-            onClick={() => setIsLogin(!isLogin)}
+            onClick={() => !loading && setIsLogin(!isLogin)}
             className="text-blue-400 cursor-pointer ml-1"
           >
             {isLogin ? "Register" : "Login"}
           </span>
         </p>
-
       </div>
     </div>
   );
