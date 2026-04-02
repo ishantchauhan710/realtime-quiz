@@ -60,6 +60,18 @@ const routes = {
     tokens: [{"old":"/profile/avatar","type":0,"val":"profile","end":""},{"old":"/profile/avatar","type":0,"val":"avatar","end":""}],
     types: placeholder as Registry['auth.upload_avatar']['types'],
   },
+  'quizzes.index': {
+    methods: ["GET","HEAD"],
+    pattern: '/quizzes',
+    tokens: [{"old":"/quizzes","type":0,"val":"quizzes","end":""}],
+    types: placeholder as Registry['quizzes.index']['types'],
+  },
+  'quizzes.show': {
+    methods: ["GET","HEAD"],
+    pattern: '/quizzes/:id',
+    tokens: [{"old":"/quizzes/:id","type":0,"val":"quizzes","end":""},{"old":"/quizzes/:id","type":1,"val":"id","end":""}],
+    types: placeholder as Registry['quizzes.show']['types'],
+  },
 } as const satisfies Record<string, AdonisEndpoint>
 
 export { routes }

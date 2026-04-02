@@ -115,4 +115,28 @@ export interface Registry {
       errorResponse: unknown
     }
   }
+  'quizzes.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/quizzes'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'quizzes.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/quizzes/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
 }

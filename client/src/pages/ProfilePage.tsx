@@ -126,7 +126,6 @@ export default function Profile({ setUser }: any) {
     }
   };
 
-  // 🔐 Logout
   const handleLogout = async () => {
     const token = getToken();
 

@@ -22,6 +22,10 @@ router.group(() => {
   router.get('/me', '#controllers/auth_controller.me')
   router.put('/profile', '#controllers/auth_controller.updateProfile')
   router.post('/profile/avatar', '#controllers/auth_controller.uploadAvatar')
+
+  router.get('/quizzes', '#controllers/quizzes_controller.index')
+  router.get('/quizzes/:id', '#controllers/quizzes_controller.show')
+
 }).use(jwt.handle)
 
 router.get('/uploads/*', async ({ params, response }) => {

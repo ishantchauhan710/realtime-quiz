@@ -13,16 +13,22 @@ export type ScannedRoutes = {
     'auth.me': { paramsTuple?: []; params?: {} }
     'auth.update_profile': { paramsTuple?: []; params?: {} }
     'auth.upload_avatar': { paramsTuple?: []; params?: {} }
+    'quizzes.index': { paramsTuple?: []; params?: {} }
+    'quizzes.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   GET: {
     'oauth.redirect': { paramsTuple?: []; params?: {} }
     'oauth.callback': { paramsTuple?: []; params?: {} }
     'auth.me': { paramsTuple?: []; params?: {} }
+    'quizzes.index': { paramsTuple?: []; params?: {} }
+    'quizzes.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   HEAD: {
     'oauth.redirect': { paramsTuple?: []; params?: {} }
     'oauth.callback': { paramsTuple?: []; params?: {} }
     'auth.me': { paramsTuple?: []; params?: {} }
+    'quizzes.index': { paramsTuple?: []; params?: {} }
+    'quizzes.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   POST: {
     'auth.register': { paramsTuple?: []; params?: {} }

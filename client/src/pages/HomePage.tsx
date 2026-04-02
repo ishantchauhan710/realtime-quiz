@@ -1,132 +1,36 @@
 import { useEffect, useState } from "react";
 import { getToken, clearToken } from "../lib/auth";
 import PageContainer from "./PageContainer";
+import { API } from "../lib/api";
 
-export default function Home({ setUser }: any) {
-  const [user, setLocalUser] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [name, setName] = useState("");
-  const [file, setFile] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string | null>(null);
-  const [saving, setSaving] = useState(false);
+export default function Home() {
 
-  const API = "http://localhost:3333";
+  const [quizzes, setQuizzes] = useState<any[]>([]);
+  const [quizLoading, setQuizLoading] = useState(true);
 
-  // 🔥 Fetch user
-  const fetchMe = async () => {
-    const token = getToken();
-
-    if (!token) {
-      window.location.href = "/";
-      return;
-    }
-
+  const fetchQuizzes = async () => {
     try {
-      const res = await fetch(API + "/me", {
+
+      const token = getToken();
+      const res = await fetch(API + "/quizzes", {
         headers: {
           Authorization: `Bearer ${token}`,
-        },
+        }
       });
-
       const data = await res.json();
 
-      if (!res.ok) {
-        clearToken();
-        window.location.href = "/";
-        return;
-      }
-
-      setLocalUser(data);
-      setUser(data);
-      setName(data.name);
-    } catch {
-      clearToken();
-      window.location.href = "/";
+      setQuizzes(data);
+    } catch (err) {
+      console.error("Failed to fetch quizzes", err);
     } finally {
-      setLoading(false);
+      setQuizLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchMe();
+    fetchQuizzes();
   }, []);
 
-  // 🔥 Avatar helper
-  const getAvatar = () => {
-    if (preview) return preview;
-
-    if (!user?.profilePictureUrl) {
-      return `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(
-        user?.name || "User"
-      )}`;
-    }
-
-    return user.profilePictureUrl.startsWith("http")
-      ? user.profilePictureUrl
-      : `${API}${user.profilePictureUrl}`;
-  };
-
-
-  const handleUpdateProfile = async () => {
-    const token = getToken();
-    setSaving(true);
-
-    try {
-      const res = await fetch(API + "/profile", {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ name }),
-      });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        setLocalUser(data.user);
-        setUser(data.user);
-      }
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  // 🖼️ Upload avatar
-  const handleUploadAvatar = async () => {
-    if (!file) return;
-
-    const token = getToken();
-    const formData = new FormData();
-    formData.append("avatar", file);
-
-    setSaving(true);
-
-    try {
-      const res = await fetch(API + "/profile/avatar", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formData,
-      });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        setLocalUser((prev: any) => ({
-          ...prev,
-          profilePictureUrl: data.avatar, // ✅ correct
-        }));
-        setPreview(null); // clear preview after upload
-        handleUpdateProfile(); // refresh profile to get new avatar URL
-      }
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  // 🔐 Logout
   const handleLogout = async () => {
     const token = getToken();
 
@@ -138,24 +42,68 @@ export default function Home({ setUser }: any) {
     });
 
     clearToken();
-    setUser(null);
     window.location.href = "/";
   };
 
-  if (loading) {
+  if (quizLoading) {
     return <div className="text-white text-center mt-20">Loading...</div>;
   }
 
-  return (
-    <PageContainer onLogout={handleLogout}>
-      <div className="mb-8">
-        <h1 className="text-3xl font-semibold">Home</h1>
-        <p className="text-gray-400 text-sm">Play Quiz</p>
-      </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-       hi
-      </div>
-    </PageContainer>
+  return (<PageContainer onLogout={handleLogout}>
+    <div className="mb-8">
+      <h1 className="text-3xl font-semibold">Home</h1>
+      <p className="text-gray-400 text-sm">Play Quiz</p>
+    </div>
+
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {quizLoading ? (
+        <div className="text-gray-400">Loading quizzes...</div>
+      ) : (
+        quizzes.map((quiz) => (
+          <div
+            key={quiz.id}
+            className="group relative rounded-2xl p-[1px] bg-gradient-to-br from-gray-800 to-gray-700 hover:from-white/20 hover:to-white/10 transition-all duration-300"
+          >
+            {/* Inner Card */}
+            <div className="h-full bg-gray-950 rounded-2xl p-6 flex flex-col justify-between shadow-lg transition-all duration-300">
+
+              {/* Top */}
+              <div>
+                <h2 className="text-xl font-semibold text-white mb-2">
+                  {quiz.title}
+                </h2>
+
+                <p className="text-sm text-gray-400 line-clamp-2">
+                  {quiz.description}
+                </p>
+
+                {/* Meta */}
+                <div className="flex items-center gap-4 mt-4 text-xs text-gray-500">
+                  {quiz.questions?.length && (
+                    <span>🧠 {quiz.questions.length} Questions</span>
+                  )}
+                  {quiz.timeLimit && (
+                    <span>⏱ {quiz.timeLimit}s</span>
+                  )}
+                </div>
+              </div>
+
+              {/* Button */}
+              <button
+                className="mt-6 w-full py-2.5 rounded-xl cursor-pointer bg-white text-black text-sm font-semibold hover:bg-gray-200 transition-all"
+                onClick={() => {
+                  console.log("Start quiz", quiz.id);
+                }}
+              >
+                Start Quiz →
+              </button>
+            </div>
+          </div>
+        ))
+      )}
+    </div>
+
+  </PageContainer>
   );
 }
