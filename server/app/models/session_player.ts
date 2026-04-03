@@ -25,6 +25,9 @@ export default class SessionPlayer extends BaseModel {
   @column()
   declare finishedAt: DateTime | null
 
+  @column()
+  declare answeredAt: DateTime | null
+
   @belongsTo(() => User, {
     foreignKey: 'userId',
   })

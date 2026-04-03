@@ -10,7 +10,7 @@ import { DateTime } from 'luxon'
 const quizEngine = new QuizEngineService()
 
 function formatPlayers(players: any[], hostId: number) {
-  return players.map(p => ({
+  return players.map((p) => ({
     userId: p.userId,
     name: p.user.name,
     email: p.user.email,
@@ -20,16 +20,13 @@ function formatPlayers(players: any[], hostId: number) {
   }))
 }
 
-
-
 async function finishQuiz(io: any, sessionId: number) {
-  const players = await SessionPlayer
-    .query()
+  const players = await SessionPlayer.query()
     .where('session_id', sessionId)
     .preload('user')
 
   const leaderboard = players
-    .map(p => ({
+    .map((p) => ({
       userId: p.userId,
       name: p.user.name,
       score: p.score,
@@ -40,13 +37,9 @@ async function finishQuiz(io: any, sessionId: number) {
 
       if (a.finishedAt && b.finishedAt) {
         return a.finishedAt.toMillis() - b.finishedAt.toMillis()
-      } else if (a.finishedAt) {
-        return -1
-      } else if (b.finishedAt) {
-        return 1
-      } else {
-        return 0
-      }
+      } else if (a.finishedAt) return -1
+      else if (b.finishedAt) return 1
+      else return 0
     })
 
   io.to(`session:${sessionId}`).emit('quiz_finished', {
@@ -55,36 +48,49 @@ async function finishQuiz(io: any, sessionId: number) {
   })
 }
 
-async function sendQuestion(io: any, sessionId: number) {
-  const session = await Session.findOrFail(sessionId)
+async function checkAndFinishQuiz(io: any, sessionId: number) {
+  const players = await SessionPlayer.query().where('session_id', sessionId)
 
-  const question = await Question
-    .query()
+  const allFinished = players.every((p) => p.finishedAt)
+
+  if (allFinished) {
+    await finishQuiz(io, sessionId)
+  }
+}
+
+async function sendQuestionToPlayer(socket: any, sessionPlayer: any) {
+  const session = await Session.findOrFail(sessionPlayer.sessionId)
+
+  const question = await Question.query()
     .where('quiz_id', session.quizId)
     .orderBy('order_index')
-    .offset(session.currentQuestionIndex)
+    .offset(sessionPlayer.currentQuestionIndex)
     .first()
 
   if (!question) {
-    return finishQuiz(io, sessionId)
+    sessionPlayer.finishedAt = DateTime.now().toISO()
+    await sessionPlayer.save()
+
+    socket.emit('quiz_completed')
+
+    await checkAndFinishQuiz(socket.server, session.id)
+    return
   }
+
+  // sessionPlayer.answeredAt = null
+  // await sessionPlayer.save()
+
+  console.log('Sending new question to user', sessionPlayer.userId, 'for session', session.id, 'Question ID:', question.id)
 
   const duration = 10
 
-  io.to(`session:${sessionId}`).emit('question_start', {
+  socket.emit('question_start', {
     question,
-    index: session.currentQuestionIndex,
+    index: sessionPlayer.currentQuestionIndex,
     duration,
+    // correctOption: question.correctOption, // TODO: Remove this in production
   })
-
-  setTimeout(async () => {
-    session.currentQuestionIndex++
-    await session.save()
-
-    await sendQuestion(io, sessionId)
-  }, duration * 1000)
 }
-
 
 app.ready(() => {
   Ws.boot()
@@ -104,14 +110,11 @@ app.ready(() => {
   io.on('connection', (socket: any) => {
     const userId = socket.data.userId
 
-
-
     socket.on('join_session', async ({ sessionId }: { sessionId: number }) => {
       const room = `session:${sessionId}`
       socket.join(room)
 
-      const players = await SessionPlayer
-        .query()
+      const players = await SessionPlayer.query()
         .where('session_id', sessionId)
         .preload('user')
 
@@ -123,17 +126,28 @@ app.ready(() => {
       )
     })
 
-
     socket.on('start_quiz', async ({ sessionId }: { sessionId: number }) => {
       const session = await Session.findOrFail(sessionId)
 
       if (session.createdBy !== userId) return
 
+      const players = await SessionPlayer.query().where(
+        'session_id',
+        sessionId
+      )
+
+      for (const p of players) {
+        p.currentQuestionIndex = 0
+        p.score = 0
+        p.finishedAt = null
+        // p.answeredAt = null
+        await p.save()
+      }
+
       let count = 5
 
       const interval = setInterval(() => {
         io.to(`session:${sessionId}`).emit('game_countdown', { count })
-
         count--
 
         if (count === 0) {
@@ -141,22 +155,60 @@ app.ready(() => {
 
           io.to(`session:${sessionId}`).emit('game_start')
 
-          sendQuestion(io, sessionId)
+          for (const player of players) {
+            const playerSocket = [...io.sockets.sockets.values()].find(
+              (s: any) => s.data.userId === player.userId
+            )
+
+            if (playerSocket) {
+              sendQuestionToPlayer(playerSocket, player)
+            }
+          }
         }
       }, 1000)
     })
 
-    socket.on('submit_answer', async ({ sessionId, selectedOption }: { sessionId: number, selectedOption: number }) => {
-      const result = await quizEngine.submitAnswer(
-        userId,
+    socket.on(
+      'submit_answer',
+      async ({
         sessionId,
-        selectedOption
-      )
+        selectedOption,
+      }: {
+        sessionId: number
+        selectedOption: number
+      }) => {
+        console.log('Received answer submission')
 
-      io.to(`session:${sessionId}`).emit(
-        'score_update',
-        result.leaderboard
-      )
-    })
+        const result = await quizEngine.submitAnswer(
+          userId,
+          sessionId,
+          selectedOption
+        )
+
+        socket.emit('answer_result', {
+          correctAnswer: result.correctAnswer,
+        })
+
+        // add 1 second delay before sending the next question to allow clients to show correct/incorrect feedback
+        await new Promise((resolve) => setTimeout(resolve, 1000))
+
+        socket.emit('answer_result', {
+          correctAnswer: null
+        })
+
+
+        io.to(`session:${sessionId}`).emit(
+          'score_update',
+          result.leaderboard
+        )
+
+        const freshPlayer = await SessionPlayer.query()
+          .where('session_id', sessionId)
+          .andWhere('user_id', userId)
+          .firstOrFail()
+
+        await sendQuestionToPlayer(socket, freshPlayer)
+      }
+    )
   })
 })

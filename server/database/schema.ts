@@ -107,8 +107,10 @@ export class RefreshTokenSchema extends BaseModel {
 }
 
 export class SessionPlayerSchema extends BaseModel {
-  static $columns = ['currentQuestionIndex', 'finishedAt', 'id', 'isFinished', 'joinedAt', 'score', 'sessionId', 'userId'] as const
+  static $columns = ['answeredAt', 'currentQuestionIndex', 'finishedAt', 'id', 'isFinished', 'joinedAt', 'score', 'sessionId', 'userId'] as const
   $columns = SessionPlayerSchema.$columns
+  @column.dateTime()
+  declare answeredAt: DateTime | null
   @column()
   declare currentQuestionIndex: number | null
   @column.dateTime()
