@@ -61,135 +61,161 @@ export default function RoomPage() {
         checkRoom()
     }, [])
 
+
+    const [retryCount, setRetryCount] = useState(0)
+
+    useEffect(() => {
+        if (players?.length === 0 && retryCount < 5) {
+            const retry = setTimeout(() => {
+                console.log("Reconnecting socket...")
+
+                socket.disconnect()
+                socket.connect()
+
+                setRetryCount(prev => prev + 1)
+            }, 1500)
+
+            return () => clearTimeout(retry)
+        }
+    }, [players])
+
     // Socket event listeners
     useEffect(() => {
         // Connect to socket
         socket.connect()
 
         socket.on("connect", () => {
-            // Join backend with session ID from params that was created before creating or joining the room
             socket.emit("join_session", { sessionId })
-
-            // When a player joins, update the player list in the room
-            socket.on("room_update", (_players) => {
-                setPlayers(_players)
-                setLeaderboard(_players.map((p: any) => (
-                    {
-                        userId: p.userId,
-                        name: p.name,
-                        score: p.score,
-                        isFinished: p.isFinished,
-                        profilePictureUrl: p.profilePictureUrl,
-                    }
-                ))) // Update leaderboard as well on room update
-
-                // Host check
-                const me = _players.find((p: any) => p.userId === myUserId)
-                setIsHost(me?.isHost || false)
-            })
-
-            // Game start countdown 
-            socket.on("game_countdown", ({ count }) => {
-                setCountdown(count)
-            })
-
-            // Game started
-            socket.on("game_start", () => {
-                setQuizStarted(true)
-            })
-
-
-            // Game started
-            socket.on("score_update", (data) => {
-                console.log("Received score update:", data)
-                setLeaderboard(data)
-            })
-
-            // Notification updates
-            socket.on("update", (data) => {
-                if (!data) return
-
-                const now = Date.now()
-
-                setUpdates((prev) => {
-                    // 👉 check last update timestamp
-                    const last = prev[prev.length - 1]
-
-                    if (last && now - last.timestamp < 1000) {
-                        return prev // ❌ skip duplicate within 1s
-                    }
-
-                    const id = now
-
-                    const newUpdate = {
-                        id,
-                        text: data,
-                        visible: true,
-                        timestamp: now,
-                    }
-
-                    // fade + remove logic
-                    setTimeout(() => {
-                        setUpdates((p) =>
-                            p.map((u) =>
-                                u.id === id ? { ...u, visible: false } : u
-                            )
-                        )
-                    }, 1000)
-
-                    setTimeout(() => {
-                        setUpdates((p) => p.filter((u) => u.id !== id))
-                    }, 1300)
-
-                    return [...prev, newUpdate]
-                })
-            })
-
-            // Answer result received
-            socket.on("answer_result", ({ correctAnswer }) => {
-                // console.log("Received answer result. Correct option is:", correctAnswer)
-                setCorrectOption(correctAnswer)
-            })
-
-            // Received question
-            socket.on("question_start", ({ question, index, duration }) => {
-                // console.log("Received question:", question)
-                setQuestion(question)
-                setIndex(index)
-                setLoading(false)
-
-                setSelected(null)
-                setCorrectOption(null)
-                setTimeLeft(duration)
-
-                // reset timer
-                if (timer) clearInterval(timer)
-
-                let time = duration
-
-                timer = setInterval(() => {
-                    time--
-                    setTimeLeft(time)
-
-                    if (time <= 0) {
-                        clearInterval(timer)
-
-                        socket.emit("submit_answer", {
-                            sessionId,
-                            selectedOption: null,
-                        })
-                    }
-                }, 1000)
-            })
-
-            // Quiz completed, navigate to results page
-            socket.on("quiz_completed", () => {
-                setQuizCompleted(true)
-            })
-
-
         })
 
+        // Join backend with session ID from params that was created before creating or joining the room
+        socket.emit("join_session", { sessionId })
+
+        // When a player joins, update the player list in the room
+        socket.on("room_update", (_players) => {
+            setPlayers(_players)
+            setLeaderboard(_players.map((p: any) => (
+                {
+                    userId: p.userId,
+                    name: p.name,
+                    score: p.score,
+                    isFinished: p.isFinished,
+                    profilePictureUrl: p.profilePictureUrl,
+                }
+            ))) // Update leaderboard as well on room update
+
+            // Host check
+            const me = _players.find((p: any) => p.userId === myUserId)
+            setIsHost(me?.isHost || false)
+        })
+
+        // Game start countdown 
+        socket.on("game_countdown", ({ count }) => {
+            setCountdown(count)
+        })
+
+        // Game started
+        socket.on("game_start", () => {
+            setQuizStarted(true)
+        })
+
+
+        // Game started
+        socket.on("score_update", (data) => {
+            console.log("Received score update:", data)
+            setLeaderboard(data)
+        })
+
+        // Notification updates
+        socket.on("update", (data) => {
+            if (!data) return
+
+            const now = Date.now()
+
+            setUpdates((prev) => {
+                // 👉 check last update timestamp
+                const last = prev[prev.length - 1]
+
+                if (last && now - last.timestamp < 1000) {
+                    return prev // ❌ skip duplicate within 1s
+                }
+
+                const id = now
+
+                const newUpdate = {
+                    id,
+                    text: data,
+                    visible: true,
+                    timestamp: now,
+                }
+
+                // fade + remove logic
+                setTimeout(() => {
+                    setUpdates((p) =>
+                        p.map((u) =>
+                            u.id === id ? { ...u, visible: false } : u
+                        )
+                    )
+                }, 1000)
+
+                setTimeout(() => {
+                    setUpdates((p) => p.filter((u) => u.id !== id))
+                }, 1300)
+
+                return [...prev, newUpdate]
+            })
+        })
+
+        // Answer result received
+        socket.on("answer_result", ({ correctAnswer }) => {
+            // console.log("Received answer result. Correct option is:", correctAnswer)
+            setCorrectOption(correctAnswer)
+        })
+
+        // Received question
+        socket.on("question_start", ({ question, index, duration, startedAt }) => {
+            setQuestion(question)
+            setIndex(index)
+            setLoading(false)
+
+            setSelected(null)
+            setCorrectOption(null)
+
+            if (timer) clearInterval(timer)
+
+            const endTime = startedAt + duration * 1000
+
+            const updateTimer = () => {
+                const now = Date.now()
+
+                const remaining = Math.max(
+                    0,
+                    Math.ceil((endTime - now) / 1000)
+                )
+
+                setTimeLeft(remaining)
+
+                if (remaining <= 0) {
+                    clearInterval(timer)
+
+                    socket.emit("submit_answer", {
+                        sessionId,
+                        selectedOption: null,
+                    })
+                }
+            }
+
+            // run immediately (NO flicker)
+            updateTimer()
+
+            // then keep updating
+            timer = setInterval(updateTimer, 250)
+        })
+
+        // Quiz completed, navigate to results page
+        socket.on("quiz_completed", () => {
+            setQuizCompleted(true)
+        })
 
         return () => {
             socket.disconnect()

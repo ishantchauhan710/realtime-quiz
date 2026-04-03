@@ -95,28 +95,56 @@ async function sendQuestionToPlayer(socket: any, sessionPlayer: any) {
     return
   }
 
-  const duration = 10
+  const duration = 10 // seconds
+  const startedAt = DateTime.now().toMillis()
 
   socket.emit('question_start', {
     question,
     index: sessionPlayer.currentQuestionIndex,
     duration,
+    startedAt
   })
+
+  // setTimeout(async () => {
+  //   console.log('Timer expired for user', duration, 'seconds')
+  //   const freshPlayer = await SessionPlayer.query()
+  //     .where('session_id', session.id)
+  //     .andWhere('user_id', sessionPlayer.userId)
+  //     .first()
+
+  //   // prevent double execution (if already answered)
+  //   if (!freshPlayer || freshPlayer.answeredAt) return
+
+  //   console.log("Time up; auto next question")
+
+  //   await sendQuestionToPlayer(socket, freshPlayer)
+  // }, (duration + 1) * 1000)
+
+
+  const endTime = startedAt + duration * 1000
+  const delay = endTime - DateTime.now().toMillis()
 
   setTimeout(async () => {
     console.log('Timer expired for user', duration, 'seconds')
+
     const freshPlayer = await SessionPlayer.query()
       .where('session_id', session.id)
       .andWhere('user_id', sessionPlayer.userId)
       .first()
 
-    // prevent double execution (if already answered)
-    if (!freshPlayer || freshPlayer.answeredAt) return
+    // prevent double execution (answered OR already moved)
+    if (
+      !freshPlayer ||
+      freshPlayer.answeredAt ||
+      freshPlayer.currentQuestionIndex !== sessionPlayer.currentQuestionIndex
+    ) {
+      return
+    }
 
-    console.log("Time up; auto next question")
+    console.log("Time up auto next question")
 
     await sendQuestionToPlayer(socket, freshPlayer)
-  }, (duration + 1) * 1000)
+  }, Math.max(0, delay))
 }
 
 app.ready(() => {

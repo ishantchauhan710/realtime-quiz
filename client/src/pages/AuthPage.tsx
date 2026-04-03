@@ -177,7 +177,7 @@ export default function Auth({ setUser }: any) {
           disabled={loading}
           className="w-full mt-3 text-gray-300 hover:text-white disabled:opacity-50"
         >
-          {loading ? "Loading..." : "Play as Guest →"}
+          {loading ? "Loading..." : "Play as Guest"}
         </button>
 
         <p className="text-gray-400 text-center mt-6">

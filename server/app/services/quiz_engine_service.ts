@@ -23,7 +23,14 @@ export default class QuizEngineService {
             .where('quiz_id', session.quizId)
             .orderBy('order_index')
             .offset(player.currentQuestionIndex)
-            .firstOrFail()
+            .first();
+
+        if (!question) {
+            player.finishedAt = DateTime.now().toISO()
+            player.isFinished = true
+            await player.save()
+            return { leaderboard: [] }
+        }
 
         let isCorrect = false;
 
