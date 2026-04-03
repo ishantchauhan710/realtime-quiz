@@ -45,7 +45,8 @@ export default class QuizEngineService {
         userId: p.userId,
         name: p.user.name,
         score: p.score,
-        isFinished: p.isFinished
+        isFinished: p.isFinished,
+        profilePictureUrl: p.user.profilePictureUrl,
       }))
       .sort((a, b) => b.score - a.score)
 

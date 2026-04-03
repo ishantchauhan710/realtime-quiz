@@ -30,6 +30,7 @@ export default function RoomPage() {
     const [correctOption, setCorrectOption] = useState<number | null>(null)
     const [score, setScore] = useState(0)
     const [timeLeft, setTimeLeft] = useState(10)
+    const [leaderboard, setLeaderboard] = useState<any[]>([])
 
     let timer: any = null
 
@@ -69,6 +70,15 @@ export default function RoomPage() {
         // When a player joins, update the player list in the room
         socket.on("room_update", (_players) => {
             setPlayers(_players)
+            setLeaderboard(_players.map((p: any) => (
+                {
+                    userId: p.userId,
+                    name: p.name,
+                    score: p.score,
+                    isFinished: p.isFinished,
+                    profilePictureUrl: p.profilePictureUrl,
+                }
+            ))) // Update leaderboard as well on room update
 
             // Host check
             const me = _players.find((p: any) => p.userId === myUserId)
@@ -85,16 +95,23 @@ export default function RoomPage() {
             setQuizStarted(true)
         })
 
+
+        // Game started
+        socket.on("score_update", (data) => {
+            console.log("Received score update:", data)
+            setLeaderboard(data)
+        })
+
+
         // Answer result received
         socket.on("answer_result", ({ correctAnswer }) => {
-            console.log('hi')
-            console.log("Received answer result. Correct option is:", correctAnswer)
+            // console.log("Received answer result. Correct option is:", correctAnswer)
             setCorrectOption(correctAnswer)
         })
 
         // Received question
         socket.on("question_start", ({ question, index, duration }) => {
-            console.log("Received question:", question)
+            // console.log("Received question:", question)
             setQuestion(question)
             setIndex(index)
             setLoading(false)
@@ -130,7 +147,7 @@ export default function RoomPage() {
 
     // ================= SUBMIT =================
     const submitAnswer = (optionIndex: number) => {
-        console.log("Submitting answer:", optionIndex)
+        // console.log("Submitting answer:", optionIndex)
         if (submitting || selected !== null) return
 
         setSubmitting(true)
@@ -180,52 +197,104 @@ export default function RoomPage() {
         <PageContainer>
 
             {quizStarted && (
-                <div className="max-w-2xl mx-auto">
+                <div className="grid grid-cols-2">
+                    {/* QUIZ */}
+                    <div className="w-full mx-auto">
 
-                    {/* HEADER */}
-                    {!error && (
-                        <div className="mb-6">
-                            <div className="flex justify-between text-sm text-gray-400 mb-2">
-                                <span>Question {index + 1}</span>
-                                <span>Score: {score}</span>
+                        {/* HEADER */}
+                        {!error && (
+                            <div className="mb-6">
+                                <div className="flex justify-between text-sm text-gray-400 mb-2">
+                                    <span>Question {index + 1}</span>
+                                    <span>Score: {score}</span>
+                                </div>
+
+                                <div className="w-full bg-zinc-800 h-2 rounded-full overflow-hidden">
+                                    <div
+                                        className="bg-white h-full transition-all"
+                                        style={{ width: `${(timeLeft / 10) * 100}%` }}
+                                    />
+                                </div>
+
+                                <div className="text-right text-xs text-gray-500 mt-1">
+                                    {timeLeft}s
+                                </div>
+                            </div>
+                        )}
+
+                        {/* QUESTION */}
+                        {!loading && question && (
+                            <div>
+                                <h2 className="text-xl font-semibold mb-6">
+                                    Q{index + 1}. {question.questionText}
+                                </h2>
+
+                                <div className="space-y-3">
+                                    {question.options.map((opt: string, i: number) => (
+                                        <button
+                                            key={i}
+                                            disabled={submitting}
+                                            onClick={() => submitAnswer(i)}
+                                            className={`w-full text-left p-4 rounded-lg border transition ${getOptionStyle(i)}`}
+                                        >
+                                            {opt}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* LEADERBOARD */}
+                    <div className="max-w-md mx-auto">
+                        <h2 className="text-lg font-semibold mb-4">Leaderboard - {leaderboard?.length}</h2>
+
+                        <div className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden">
+                            <div className="grid grid-cols-12 px-4 py-3 text-xs text-gray-400 border-b border-zinc-800">
+                                <div className="col-span-6">Player</div>
+                                <div className="col-span-6 text-end">Score</div>
+                                {/* <div className="col-span-3 text-right">Status</div> */}
                             </div>
 
-                            <div className="w-full bg-zinc-800 h-2 rounded-full overflow-hidden">
-                                <div
-                                    className="bg-white h-full transition-all"
-                                    style={{ width: `${(timeLeft / 10) * 100}%` }}
-                                />
-                            </div>
-
-                            <div className="text-right text-xs text-gray-500 mt-1">
-                                {timeLeft}s
-                            </div>
-                        </div>
-                    )}
-
-                    {/* QUESTION */}
-                    {!loading && question && (
-                        <div>
-                            <h2 className="text-xl font-semibold mb-6">
-                                Q{index + 1}. {question.questionText}
-                            </h2>
-
-                            <div className="space-y-3">
-                                {question.options.map((opt: string, i: number) => (
-                                    <button
-                                        key={i}
-                                        disabled={submitting}
-                                        onClick={() => submitAnswer(i)}
-                                        className={`w-full text-left p-4 rounded-lg border transition ${getOptionStyle(i)}`}
+                            {leaderboard?.length === 0 ? (
+                                <div className="p-4 text-sm text-gray-400">
+                                    Waiting for players to join...
+                                </div>
+                            ) : (
+                                leaderboard?.map((p) => (
+                                    <div
+                                        key={p.userId}
+                                        className="grid grid-cols-12 px-4 py-3 text-sm border-b border-zinc-800"
                                     >
-                                        {opt}
-                                    </button>
-                                ))}
-                            </div>
+                                        <div className="col-span-6 flex items-center gap-3">
+                                            <img
+                                                src={API +p.profilePictureUrl}
+                                                alt={p.name}
+                                                className="w-8 h-8 object-cover rounded-full"
+                                            />
+                                            <span>{p.name}</span>
+                                        </div>
+                                        <div className="col-span-6 text-end font-medium">
+                                            {p.score}
+                                        </div>
+                                        {/* <div className="col-span-3 text-right">
+                                            {p.isFinished ? (
+                                                <span className="text-green-400">Finished</span>
+                                            ) : (
+                                                <span className="text-yellow-400">Playing</span>
+                                            )}
+                                        </div> */}
+                                    </div>
+                                ))
+                            )}
+
+
                         </div>
-                    )}
+
+                    </div>
                 </div>
             )}
+
 
             {!quizStarted && (
                 <div className="max-w-3xl mx-auto">
@@ -252,12 +321,12 @@ export default function RoomPage() {
                                 <div className="col-span-1 text-right">Role</div>
                             </div>
 
-                            {players.length === 0 ? (
+                            {players?.length === 0 ? (
                                 <div className="p-4 text-sm text-gray-400">
                                     Waiting for players to join...
                                 </div>
                             ) : (
-                                players.map((p) => (
+                                players?.map((p) => (
                                     <div
                                         key={p.userId}
                                         className="grid grid-cols-12 items-center px-4 py-3 border-b border-zinc-800 last:border-none hover:bg-zinc-800/40 transition"
