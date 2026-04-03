@@ -152,4 +152,20 @@ export default class QuizService {
 
     return { message: 'Quiz deleted successfully' }
   }
+
+  async getUserQuizzes(userId: number) {
+    return await Quiz.query()
+      .where('created_by', userId)
+      .select(
+        'id',
+        'title',
+        'description',
+        'total_questions',
+        'time_per_question',
+        'is_default'
+      )
+      .orderBy('id', 'desc')
+  }
+
+
 }

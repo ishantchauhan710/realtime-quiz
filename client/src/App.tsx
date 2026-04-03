@@ -13,6 +13,8 @@ import MultiplayerPage from "./pages/MultiplayerPage";
 import RoomPage from "./pages/RoomPage";
 import Leaderboard from "./pages/LeaderboardPage";
 import LobbyPage from "./pages/LobbyPage";
+import QuizBuilderPage from "./pages/QuizBuilderPage";
+import MyQuizzesPage from "./pages/MyQuizzesPage";
 
 export default function App() {
   const [user, setUser] = useState<any>(null);
@@ -93,7 +95,29 @@ export default function App() {
           path="/lobby"
           element={
             user ? (
-              <LobbyPage/>
+              <LobbyPage />
+            ) : (
+              <Navigate to="/" replace />
+            )
+          }
+        />
+
+        <Route
+          path="/my-quizzes"
+          element={
+            user ? (
+              <MyQuizzesPage />
+            ) : (
+              <Navigate to="/" replace />
+            )
+          }
+        />
+
+        <Route
+          path="/quiz-builder"
+          element={
+            user ? (
+              <QuizBuilderPage />
             ) : (
               <Navigate to="/" replace />
             )

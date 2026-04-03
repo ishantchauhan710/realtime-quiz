@@ -76,4 +76,17 @@ export default class QuizController {
       return handleError(error, response)
     }
   }
+
+  async myQuizzes({ request, response }: HttpContext) {
+    try {
+      const user = request.user!
+
+      const data = await quizService.getUserQuizzes(user.id)
+
+      return response.ok(data)
+    } catch (error) {
+      return handleError(error, response)
+    }
+  }
+
 }

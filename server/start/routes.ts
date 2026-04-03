@@ -23,11 +23,13 @@ router.group(() => {
   router.put('/profile', '#controllers/auth_controller.updateProfile')
   router.post('/profile/avatar', '#controllers/auth_controller.uploadAvatar')
 
+  // Quizzes
   router.post('/quizzes', '#controllers/quizzes_controller.store')
   router.get('/quizzes', '#controllers/quizzes_controller.index')
   router.get('/quizzes/:id', '#controllers/quizzes_controller.show')
   router.put('/quizzes/:id', '#controllers/quizzes_controller.update')
   router.delete('/quizzes/:id', '#controllers/quizzes_controller.destroy')
+  router.get('/my-quizzes', '#controllers/quizzes_controller.myQuizzes')
 
   // Solo
   router.post('/sessions/solo', '#controllers/session_controller.createSolo')

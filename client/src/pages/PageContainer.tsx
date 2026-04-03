@@ -17,6 +17,7 @@ export default function PageContainer({
         { label: "Lobby", path: "/lobby" },
         { label: "Leaderboard", path: "/leaderboard" },
         { label: "Profile", path: "/profile" },
+        { label: "My Quizzes", path: "/my-quizzes" },
     ];
 
     return (
