@@ -11,7 +11,10 @@ export default class Question extends BaseModel {
   @column()
   declare questionText: string
 
-  @column()
+  @column({
+    prepare: (value: string[]) => JSON.stringify(value),
+    consume: (value: string) => JSON.parse(value),
+  })
   declare options: string[]
 
   @column()

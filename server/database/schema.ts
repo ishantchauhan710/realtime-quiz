@@ -61,7 +61,7 @@ export class QuestionSchema extends BaseModel {
   @column({ isPrimary: true })
   declare id: number
   @column()
-  declare options: any
+  declare options: string
   @column()
   declare orderIndex: number
   @column()
@@ -71,7 +71,7 @@ export class QuestionSchema extends BaseModel {
 }
 
 export class QuizSchema extends BaseModel {
-  static $columns = ['createdAt', 'createdBy', 'description', 'id', 'isDefault', 'timePerQuestion', 'title', 'totalQuestions'] as const
+  static $columns = ['createdAt', 'createdBy', 'description', 'id', 'isDefault', 'timePerQuestion', 'title', 'totalQuestions', 'updatedAt'] as const
   $columns = QuizSchema.$columns
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime | null
@@ -89,6 +89,8 @@ export class QuizSchema extends BaseModel {
   declare title: string
   @column()
   declare totalQuestions: number
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
 }
 
 export class RefreshTokenSchema extends BaseModel {

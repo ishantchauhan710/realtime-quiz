@@ -15,7 +15,7 @@ export default class extends BaseSchema {
         .onDelete('CASCADE')
 
       table.text('question_text').notNullable()
-      table.jsonb('options').notNullable()
+      table.text('options').notNullable()
       table.integer('correct_option').notNullable()
       table.integer('order_index').notNullable()
 

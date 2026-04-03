@@ -14,6 +14,16 @@ export default class extends BaseSchema {
       table.integer('time_per_question').notNullable()
 
       table.timestamp('created_at')
+      table.timestamp('updated_at')
+
+      table.boolean('is_default').defaultTo(true)
+
+      table
+        .integer('created_by')
+        .unsigned()
+        .references('id')
+        .inTable('users')
+        .nullable()
     })
   }
 

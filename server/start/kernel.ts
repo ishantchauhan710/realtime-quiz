@@ -10,6 +10,7 @@
 
 import router from '@adonisjs/core/services/router'
 import server from '@adonisjs/core/services/server'
+import { seedDefaultQuizzes } from '../utils/seed_quizes.ts'
 
 /**
  * The error handler is used to convert an exception
@@ -47,3 +48,7 @@ router.use([
 export const middleware = router.named({
   auth: () => import('#middleware/auth_middleware'),
 })
+
+seedDefaultQuizzes().catch((error) => {
+  console.error('Error seeding default quizzes:', error)
+});
