@@ -109,28 +109,10 @@ async function sendQuestionToPlayer(socket: any, sessionPlayer: any) {
     startedAt
   })
 
-  // setTimeout(async () => {
-  //   console.log('Timer expired for user', duration, 'seconds')
-  //   const freshPlayer = await SessionPlayer.query()
-  //     .where('session_id', session.id)
-  //     .andWhere('user_id', sessionPlayer.userId)
-  //     .first()
-
-  //   // prevent double execution (if already answered)
-  //   if (!freshPlayer || freshPlayer.answeredAt) return
-
-  //   console.log("Time up; auto next question")
-
-  //   await sendQuestionToPlayer(socket, freshPlayer)
-  // }, (duration + 1) * 1000)
-
-
   const endTime = startedAt + duration * 1000
   const delay = endTime - DateTime.now().toMillis()
 
   setTimeout(async () => {
-    console.log('Timer expired for user', duration, 'seconds')
-
     const freshPlayer = await SessionPlayer.query()
       .where('session_id', session.id)
       .andWhere('user_id', sessionPlayer.userId)
@@ -144,8 +126,6 @@ async function sendQuestionToPlayer(socket: any, sessionPlayer: any) {
     ) {
       return
     }
-
-    console.log("Time up auto next question")
 
     await sendQuestionToPlayer(socket, freshPlayer)
   }, Math.max(0, delay))
@@ -197,7 +177,6 @@ app.ready(() => {
   setInterval(() => {
     const count = matchmakingService.getCount()
     io.emit("lobby_update", { count })
-    console.log('Lobby count:', count)
   }, 2000)
 
   io.use((socket: any, next: any) => {
@@ -281,7 +260,6 @@ app.ready(() => {
         sessionId: number
         selectedOption: number
       }) => {
-        console.log('Received answer submission')
 
         const result = await quizEngine.submitAnswer(
           userId,
@@ -324,7 +302,6 @@ app.ready(() => {
     socket.on(
       "join_lobby",
       async ({ quizId }: { quizId: number }) => {
-        console.log('User joining lobby for quiz', quizId, 'socket id', socket.id, 'user id', userId)
 
         matchmakingService.addPlayer(
           userId,

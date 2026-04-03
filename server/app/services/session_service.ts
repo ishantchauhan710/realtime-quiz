@@ -118,16 +118,12 @@ export default class SessionService {
 
   async getResult(userId: number, sessionId: number) {
 
-    console.log('Fetching result for user', userId, 'session', sessionId)
-
     const player = await SessionPlayer
       .query()
       .where('session_id', sessionId)
       .where('user_id', userId)
       .preload('user')
       .firstOrFail()
-
-    console.log('Player found:', player)
 
     if (!player.isFinished) {
       throw new Error('Session not finished yet')
@@ -148,8 +144,6 @@ export default class SessionService {
     }
 
     await user.save()
-
-    console.log('User stats updated:')
 
     return {
       score: player.score,

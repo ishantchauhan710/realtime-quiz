@@ -169,7 +169,6 @@ export default function RoomPage() {
 
         // Answer result received
         socket.on("answer_result", ({ correctAnswer }) => {
-            // console.log("Received answer result. Correct option is:", correctAnswer)
             setCorrectOption(correctAnswer)
         })
 
@@ -225,7 +224,6 @@ export default function RoomPage() {
 
     // ================= SUBMIT =================
     const submitAnswer = (optionIndex: number) => {
-        // console.log("Submitting answer:", optionIndex)
         if (submitting || selected !== null) return
 
         setSubmitting(true)
