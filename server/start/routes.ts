@@ -29,6 +29,11 @@ router.group(() => {
   router.put('/quizzes/:id', '#controllers/quizzes_controller.update')
   router.delete('/quizzes/:id', '#controllers/quizzes_controller.destroy')
 
+  router.post('/sessions/solo', '#controllers/session_controller.createSolo')
+  router.get('/sessions/:id/question', '#controllers/session_controller.getQuestion')
+  router.post('/sessions/:id/answer', '#controllers/session_controller.submitAnswer')
+  router.get('/sessions/:id/result', '#controllers/session_controller.getResult')
+
 }).use(jwt.handle)
 
 router.get('/uploads/*', async ({ params, response }) => {

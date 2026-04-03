@@ -22,4 +22,10 @@ export interface ApiDefinition {
     update: typeof routes['quizzes.update']
     destroy: typeof routes['quizzes.destroy']
   }
+  session: {
+    createSolo: typeof routes['session.create_solo']
+    getQuestion: typeof routes['session.get_question']
+    submitAnswer: typeof routes['session.submit_answer']
+    getResult: typeof routes['session.get_result']
+  }
 }

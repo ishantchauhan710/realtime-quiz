@@ -18,6 +18,10 @@ export type ScannedRoutes = {
     'quizzes.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'quizzes.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'quizzes.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'session.create_solo': { paramsTuple?: []; params?: {} }
+    'session.get_question': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'session.submit_answer': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'session.get_result': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   GET: {
     'oauth.redirect': { paramsTuple?: []; params?: {} }
@@ -25,6 +29,8 @@ export type ScannedRoutes = {
     'auth.me': { paramsTuple?: []; params?: {} }
     'quizzes.index': { paramsTuple?: []; params?: {} }
     'quizzes.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'session.get_question': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'session.get_result': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   HEAD: {
     'oauth.redirect': { paramsTuple?: []; params?: {} }
@@ -32,6 +38,8 @@ export type ScannedRoutes = {
     'auth.me': { paramsTuple?: []; params?: {} }
     'quizzes.index': { paramsTuple?: []; params?: {} }
     'quizzes.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'session.get_question': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'session.get_result': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   POST: {
     'auth.register': { paramsTuple?: []; params?: {} }
@@ -40,6 +48,8 @@ export type ScannedRoutes = {
     'auth.logout': { paramsTuple?: []; params?: {} }
     'auth.upload_avatar': { paramsTuple?: []; params?: {} }
     'quizzes.store': { paramsTuple?: []; params?: {} }
+    'session.create_solo': { paramsTuple?: []; params?: {} }
+    'session.submit_answer': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   PUT: {
     'auth.update_profile': { paramsTuple?: []; params?: {} }

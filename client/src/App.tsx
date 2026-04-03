@@ -6,6 +6,9 @@ import Auth from "./pages/AuthPage";
 import Home from "./pages/HomePage";
 import GoogleSuccess from "./pages/AuthSuccess";
 import Profile from "./pages/ProfilePage";
+import QuizStartPage from "./pages/QuizStartPage";
+import SessionPage from "./pages/SessionPage";
+import ResultPage from "./pages/ResultPage";
 
 export default function App() {
   const [user, setUser] = useState<any>(null);
@@ -70,6 +73,40 @@ export default function App() {
           }
         />
 
+
+        <Route
+          path="/quiz/:id"
+          element={
+            user ? (
+              <QuizStartPage />
+            ) : (
+              <Navigate to="/" replace />
+            )
+          }
+        />
+
+        <Route
+          path="/session/:id"
+          element={
+            user ? (
+              <SessionPage />
+            ) : (
+              <Navigate to="/" replace />
+            )
+          }
+        />
+
+        <Route
+          path="/result/:id"
+          element={
+            user ? (
+              <ResultPage />
+            ) : (
+              <Navigate to="/" replace />
+            )
+          }
+        />
+
         <Route
           path="/profile"
           element={
@@ -80,7 +117,9 @@ export default function App() {
             )
           }
         />
-``
+
+
+        ``
 
 
         <Route path="/auth/success" element={<GoogleSuccess setUser={setUser} />} />

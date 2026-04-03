@@ -20,8 +20,8 @@ export default class Session extends BaseModel {
   @column()
   declare createdBy: number
 
-  @column()
-  declare currentQuestionIndex: number
+  // @column()
+  // declare currentQuestionIndex: number
 
   @column.dateTime()
   declare startTime: DateTime | null
