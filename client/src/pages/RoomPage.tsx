@@ -31,6 +31,7 @@ export default function RoomPage() {
     const [score, setScore] = useState(0)
     const [timeLeft, setTimeLeft] = useState(10)
     const [leaderboard, setLeaderboard] = useState<any[]>([])
+    const [updates, setUpdates] = useState([] as any[])
 
     let timer: any = null
 
@@ -102,6 +103,45 @@ export default function RoomPage() {
             setLeaderboard(data)
         })
 
+        // Notification updates
+        socket.on("update", (data) => {
+            if (!data) return
+
+            const now = Date.now()
+
+            setUpdates((prev) => {
+                // 👉 check last update timestamp
+                const last = prev[prev.length - 1]
+
+                if (last && now - last.timestamp < 1000) {
+                    return prev // ❌ skip duplicate within 1s
+                }
+
+                const id = now
+
+                const newUpdate = {
+                    id,
+                    text: data,
+                    visible: true,
+                    timestamp: now,
+                }
+
+                // fade + remove logic
+                setTimeout(() => {
+                    setUpdates((p) =>
+                        p.map((u) =>
+                            u.id === id ? { ...u, visible: false } : u
+                        )
+                    )
+                }, 1000)
+
+                setTimeout(() => {
+                    setUpdates((p) => p.filter((u) => u.id !== id))
+                }, 1300)
+
+                return [...prev, newUpdate]
+            })
+        })
 
         // Answer result received
         socket.on("answer_result", ({ correctAnswer }) => {
@@ -195,104 +235,117 @@ export default function RoomPage() {
 
     return (
         <PageContainer>
-
             {quizStarted && (
-                <div className="grid grid-cols-2">
-                    {/* QUIZ */}
-                    <div className="w-full mx-auto">
-
-                        {/* HEADER */}
-                        {!error && (
-                            <div className="mb-6">
-                                <div className="flex justify-between text-sm text-gray-400 mb-2">
-                                    <span>Question {index + 1}</span>
-                                    <span>Score: {score}</span>
-                                </div>
-
-                                <div className="w-full bg-zinc-800 h-2 rounded-full overflow-hidden">
-                                    <div
-                                        className="bg-white h-full transition-all"
-                                        style={{ width: `${(timeLeft / 10) * 100}%` }}
-                                    />
-                                </div>
-
-                                <div className="text-right text-xs text-gray-500 mt-1">
-                                    {timeLeft}s
-                                </div>
+                <>
+                    <div className="fixed top-5 left-1/2 -translate-x-1/2 space-y-2 z-50">
+                        {updates.map((u) => (
+                            <div
+                                key={u.id}
+                                className={`px-4 py-2 rounded-lg text-white font-semibold shadow-lg transition-all duration-300
+                ${u.visible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2"}
+                bg-green-600`}
+                            >
+                                {u.text}
                             </div>
-                        )}
-
-                        {/* QUESTION */}
-                        {!loading && question && (
-                            <div>
-                                <h2 className="text-xl font-semibold mb-6">
-                                    Q{index + 1}. {question.questionText}
-                                </h2>
-
-                                <div className="space-y-3">
-                                    {question.options.map((opt: string, i: number) => (
-                                        <button
-                                            key={i}
-                                            disabled={submitting}
-                                            onClick={() => submitAnswer(i)}
-                                            className={`w-full text-left p-4 rounded-lg border transition ${getOptionStyle(i)}`}
-                                        >
-                                            {opt}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
+                        ))}
                     </div>
+                    <div className="grid grid-cols-2">
+                        {/* QUIZ */}
+                        <div className="w-full mx-auto">
 
-                    {/* LEADERBOARD */}
-                    <div className="max-w-md mx-auto">
-                        <h2 className="text-lg font-semibold mb-4">Leaderboard - {leaderboard?.length}</h2>
+                            {/* HEADER */}
+                            {!error && (
+                                <div className="mb-6">
+                                    <div className="flex justify-between text-sm text-gray-400 mb-2">
+                                        <span>Question {index + 1}</span>
+                                        <span>Score: {score}</span>
+                                    </div>
 
-                        <div className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden">
-                            <div className="grid grid-cols-12 px-4 py-3 text-xs text-gray-400 border-b border-zinc-800">
-                                <div className="col-span-6">Player</div>
-                                <div className="col-span-6 text-end">Score</div>
-                                {/* <div className="col-span-3 text-right">Status</div> */}
-                            </div>
+                                    <div className="w-full bg-zinc-800 h-2 rounded-full overflow-hidden">
+                                        <div
+                                            className="bg-white h-full transition-all"
+                                            style={{ width: `${(timeLeft / 10) * 100}%` }}
+                                        />
+                                    </div>
 
-                            {leaderboard?.length === 0 ? (
-                                <div className="p-4 text-sm text-gray-400">
-                                    Waiting for players to join...
+                                    <div className="text-right text-xs text-gray-500 mt-1">
+                                        {timeLeft}s
+                                    </div>
                                 </div>
-                            ) : (
-                                leaderboard?.map((p) => (
-                                    <div
-                                        key={p.userId}
-                                        className="grid grid-cols-12 px-4 py-3 text-sm border-b border-zinc-800"
-                                    >
-                                        <div className="col-span-6 flex items-center gap-3">
-                                            <img
-                                                src={API +p.profilePictureUrl}
-                                                alt={p.name}
-                                                className="w-8 h-8 object-cover rounded-full"
-                                            />
-                                            <span>{p.name}</span>
-                                        </div>
-                                        <div className="col-span-6 text-end font-medium">
-                                            {p.score}
-                                        </div>
-                                        {/* <div className="col-span-3 text-right">
+                            )}
+
+                            {/* QUESTION */}
+                            {!loading && question && (
+                                <div>
+                                    <h2 className="text-xl font-semibold mb-6">
+                                        Q{index + 1}. {question.questionText}
+                                    </h2>
+
+                                    <div className="space-y-3">
+                                        {question.options.map((opt: string, i: number) => (
+                                            <button
+                                                key={i}
+                                                disabled={submitting}
+                                                onClick={() => submitAnswer(i)}
+                                                className={`w-full text-left p-4 rounded-lg border transition ${getOptionStyle(i)}`}
+                                            >
+                                                {opt}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* LEADERBOARD */}
+                        <div className="max-w-md mx-auto">
+                            <h2 className="text-lg font-semibold mb-4">Leaderboard - {leaderboard?.length}</h2>
+
+                            <div className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden">
+                                <div className="grid grid-cols-12 px-4 py-3 text-xs text-gray-400 border-b border-zinc-800">
+                                    <div className="col-span-6">Player</div>
+                                    <div className="col-span-6 text-end">Score</div>
+                                    {/* <div className="col-span-3 text-right">Status</div> */}
+                                </div>
+
+                                {leaderboard?.length === 0 ? (
+                                    <div className="p-4 text-sm text-gray-400">
+                                        Waiting for players to join...
+                                    </div>
+                                ) : (
+                                    leaderboard?.map((p) => (
+                                        <div
+                                            key={p.userId}
+                                            className="grid grid-cols-12 px-4 py-3 text-sm border-b border-zinc-800"
+                                        >
+                                            <div className="col-span-6 flex items-center gap-3">
+                                                <img
+                                                    src={API + p.profilePictureUrl}
+                                                    alt={p.name}
+                                                    className="w-8 h-8 object-cover rounded-full"
+                                                />
+                                                <span>{p.name}</span>
+                                            </div>
+                                            <div className="col-span-6 text-end font-medium">
+                                                {p.score}
+                                            </div>
+                                            {/* <div className="col-span-3 text-right">
                                             {p.isFinished ? (
                                                 <span className="text-green-400">Finished</span>
                                             ) : (
                                                 <span className="text-yellow-400">Playing</span>
                                             )}
                                         </div> */}
-                                    </div>
-                                ))
-                            )}
+                                        </div>
+                                    ))
+                                )}
 
+
+                            </div>
 
                         </div>
-
                     </div>
-                </div>
+                </>
             )}
 
 

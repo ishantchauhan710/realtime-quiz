@@ -36,7 +36,7 @@ async function finishQuiz(io: any, sessionId: number) {
       if (b.score !== a.score) return b.score - a.score
 
       if (a.finishedAt && b.finishedAt) {
-        return a.finishedAt.toMillis() - b.finishedAt.toMillis()
+        return a?.finishedAt?.toMillis() - b?.finishedAt?.toMillis()
       } else if (a.finishedAt) return -1
       else if (b.finishedAt) return 1
       else return 0
@@ -202,10 +202,16 @@ app.ready(() => {
           result.leaderboard
         )
 
+
         const freshPlayer = await SessionPlayer.query()
           .where('session_id', sessionId)
           .andWhere('user_id', userId)
           .firstOrFail()
+
+        io.to(`session:${sessionId}`).emit(
+          'update',
+          result.update
+        )
 
         await sendQuestionToPlayer(socket, freshPlayer)
       }
