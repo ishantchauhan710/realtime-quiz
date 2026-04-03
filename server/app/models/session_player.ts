@@ -23,10 +23,10 @@ export default class SessionPlayer extends BaseModel {
   declare isFinished: boolean
 
   @column()
-  declare finishedAt: DateTime | null
+  declare finishedAt: string
 
   @column()
-  declare answeredAt: DateTime | null
+  declare answeredAt: string
 
   @belongsTo(() => User, {
     foreignKey: 'userId',

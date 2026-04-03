@@ -43,7 +43,8 @@ router.group(() => {
   router.get('/sessions/:id', '#controllers/session_controller.getSession')
   router.post('/sessions/:id/start', '#controllers/session_controller.start')
 
-
+  // Leaderboard
+  router.get('/leaderboard/global', '#controllers/leader_boards_controller.global')
 
 }).use(jwt.handle)
 

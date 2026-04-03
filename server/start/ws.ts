@@ -68,7 +68,7 @@ async function sendQuestionToPlayer(socket: any, sessionPlayer: any) {
     .first()
 
   if (!question) {
-    sessionPlayer.finishedAt = DateTime.now().toISO()
+    sessionPlayer.finishedAt = DateTime.now().toISO().toISO()
     await sessionPlayer.save()
 
     socket.emit('quiz_completed')

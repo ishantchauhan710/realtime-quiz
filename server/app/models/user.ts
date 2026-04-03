@@ -21,6 +21,20 @@ export default class User extends BaseModel {
   @column()
   declare authenticationType: 'email' | 'google'
 
+  @column()
+  declare totalWinsSolo: number
+
+  @column()
+  declare gamesPlayedSolo: number
+
+
+  @column()
+  declare totalWinsMulti: number
+
+  @column()
+  declare gamesPlayedMulti: number
+
+
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 

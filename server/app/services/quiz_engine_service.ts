@@ -38,7 +38,7 @@ export default class QuizEngineService {
             player.score += 10
         }
 
-        // player.answeredAt = DateTime.now()
+        // player.answeredAt = DateTime.now().toISO()
         player.currentQuestionIndex++
 
         await player.save()

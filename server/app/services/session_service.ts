@@ -15,7 +15,7 @@ export default class SessionService {
       status: 'active',
       mode: 'solo',
       createdBy: userId,
-      startTime: DateTime.now(),
+      startTime: DateTime.now().toISO(),
       currentQuestionIndex: 0,
     })
 
@@ -103,7 +103,7 @@ export default class SessionService {
 
     if (player.currentQuestionIndex >= quiz.totalQuestions) {
       player.isFinished = true
-      player.finishedAt = DateTime.now()
+      player.finishedAt = DateTime.now().toISO()
     }
 
     await player.save()
@@ -117,15 +117,39 @@ export default class SessionService {
   }
 
   async getResult(userId: number, sessionId: number) {
+
+    console.log('Fetching result for user', userId, 'session', sessionId)
+
     const player = await SessionPlayer
       .query()
       .where('session_id', sessionId)
       .where('user_id', userId)
+      .preload('user')
       .firstOrFail()
+
+      console.log('Player found:', player)
 
     if (!player.isFinished) {
       throw new Error('Session not finished yet')
     }
+
+    const user = player.user
+
+    user.gamesPlayedSolo += 1
+
+    // Total questions
+    const session = await Session.findOrFail(sessionId)
+    const quiz = await Quiz.findOrFail(session.quizId)
+    const totalQuestions = quiz.totalQuestions
+    const winScore = totalQuestions * 10
+
+    if (player.score >= winScore) {
+      user.totalWinsSolo += 1
+    }
+
+    await user.save()
+
+    console.log('User stats updated:')
 
     return {
       score: player.score,
@@ -216,7 +240,7 @@ export default class SessionService {
     }
 
     session.status = 'active'
-    session.startTime = DateTime.now().plus({ seconds: 5 }) // sync start
+    session.startTime = DateTime.now().toISO().plus({ seconds: 5 }) // sync start
 
     await session.save()
 

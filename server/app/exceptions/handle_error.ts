@@ -18,6 +18,8 @@ export function handleError(error: unknown, response: HttpContext['response']) {
     })
   }
 
+  console.error('Unexpected error:', error)
+
   return response.internalServerError({
     error: 'Something went wrong',
   })
