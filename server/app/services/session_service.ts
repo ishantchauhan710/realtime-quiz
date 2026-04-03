@@ -3,6 +3,7 @@ import SessionPlayer from '#models/session_player'
 import Quiz from '#models/quiz'
 import Question from '#models/question'
 import { DateTime } from 'luxon'
+import Ws from '#services/ws'
 
 export default class SessionService {
 
@@ -15,6 +16,7 @@ export default class SessionService {
       mode: 'solo',
       createdBy: userId,
       startTime: DateTime.now(),
+      currentQuestionIndex: 0,
     })
 
     await SessionPlayer.create({
@@ -131,93 +133,101 @@ export default class SessionService {
     }
   }
 
-  async createMultiplayerSession(userId: number, quizId: number) {
-    const quiz = await Quiz.findOrFail(quizId)
+  // async createMultiplayerSession(userId: number, quizId: number) {
+  //   const quiz = await Quiz.findOrFail(quizId)
 
-    const session = await Session.create({
-      quizId: quiz.id,
-      mode: 'multiplayer',
-      status: 'waiting',
-      createdBy: userId,
-    })
+  //   const session = await Session.create({
+  //     quizId: quiz.id,
+  //     mode: 'multiplayer',
+  //     status: 'waiting',
+  //     createdBy: userId,
+  //     currentQuestionIndex: 0,
+  //   })
 
-    await SessionPlayer.create({
-      sessionId: session.id,
-      userId,
-      score: 0,
-      currentQuestionIndex: 0,
-      isFinished: false,
-    })
+  //   await SessionPlayer.create({
+  //     sessionId: session.id,
+  //     userId,
+  //     score: 0,
+  //     currentQuestionIndex: 0,
+  //     isFinished: false,
+  //   })
 
-    return session
-  }
+  //   return session
+  // }
 
-  async joinSession(userId: number, sessionId: number) {
-    const session = await Session.findOrFail(sessionId)
+  // async joinSession(userId: number, sessionId: number) {
+  //   const session = await Session.findOrFail(sessionId)
 
-    if (session.status !== 'waiting') {
-      throw new Error('Game already started')
-    }
+  //   if (session.status !== 'waiting') {
+  //     throw new Error('Game already started')
+  //   }
 
-    // prevent duplicate join
-    const existing = await SessionPlayer
-      .query()
-      .where('session_id', sessionId)
-      .where('user_id', userId)
-      .first()
+  //   // prevent duplicate join
+  //   const existing = await SessionPlayer
+  //     .query()
+  //     .where('session_id', sessionId)
+  //     .where('user_id', userId)
+  //     .first()
 
-    if (existing) return session
+  //   if (existing) return session
 
-    await SessionPlayer.create({
-      sessionId,
-      userId,
-      score: 0,
-      currentQuestionIndex: 0,
-      isFinished: false,
-    })
+  //   await SessionPlayer.create({
+  //     sessionId,
+  //     userId,
+  //     score: 0,
+  //     currentQuestionIndex: 0,
+  //     isFinished: false,
+  //   })
 
-    return session
-  }
+  //   return session
+  // }
 
-  async getSessionState(sessionId: number) {
-    const session = await Session.findOrFail(sessionId)
+  // async getSessionState(sessionId: number) {
+  //   const session = await Session.findOrFail(sessionId)
 
-    const players = await SessionPlayer
-      .query()
-      .where('session_id', sessionId)
-      .preload('user') 
+  //   const players = await SessionPlayer
+  //     .query()
+  //     .where('session_id', sessionId)
+  //     .preload('user')
 
-    return {
-      session,
-      players,
-    }
-  }
+  //   return {
+  //     session,
+  //     players,
+  //   }
+  // }
 
-  async startSession(userId: number, sessionId: number) {
-    const session = await Session.findOrFail(sessionId)
+  // async startSession(userId: number, sessionId: number) {
+  //   const session = await Session.findOrFail(sessionId)
 
-    if (session.createdBy !== userId) {
-      throw new Error('Only host can start')
-    }
+  //   if (session.createdBy !== userId) {
+  //     throw new Error('Only host can start')
+  //   }
 
-    if (session.status !== 'waiting') {
-      throw new Error('Session already started')
-    }
+  //   if (session.status !== 'waiting') {
+  //     throw new Error('Session already started')
+  //   }
 
-    const players = await SessionPlayer
-      .query()
-      .where('session_id', sessionId)
+  //   const players = await SessionPlayer
+  //     .query()
+  //     .where('session_id', sessionId)
 
-    if (players.length < 2) {
-      throw new Error('At least 2 players required')
-    }
+  //   if (players.length < 2) {
+  //     throw new Error('At least 2 players required')
+  //   }
 
-    session.status = 'active'
-    session.startTime = DateTime.now().plus({ seconds: 5 }) // sync start
+  //   session.status = 'active'
+  //   session.startTime = DateTime.now().plus({ seconds: 5 }) // sync start
 
-    await session.save()
+  //   await session.save()
 
-    return session
-  }
+  //   // Start the quiz for all players in the session
+  //   // Ws.io!
+  //   //   .to(`session:${sessionId}`)
+  //   //   .emit('quiz:start', {
+  //   //     startTime: session.startTime,
+  //   //   })
+
+  //   return session
+  // }
 
 }

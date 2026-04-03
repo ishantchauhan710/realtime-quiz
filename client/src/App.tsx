@@ -9,6 +9,7 @@ import Profile from "./pages/ProfilePage";
 import QuizStartPage from "./pages/QuizStartPage";
 import SessionPage from "./pages/SessionPage";
 import ResultPage from "./pages/ResultPage";
+import MultiplayerPage from "./pages/MultiplayerPage";
 
 export default function App() {
   const [user, setUser] = useState<any>(null);
@@ -119,7 +120,13 @@ export default function App() {
         />
 
 
-        ``
+        <Route path="/multiplayer" element={
+          user ? (
+            <MultiplayerPage />
+          ) : (
+            <Navigate to="/" replace />
+          )
+        } />
 
 
         <Route path="/auth/success" element={<GoogleSuccess setUser={setUser} />} />
