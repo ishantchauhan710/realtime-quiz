@@ -1,6 +1,7 @@
 import { BaseModel, column, belongsTo } from '@adonisjs/lucid/orm'
 import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 import User from '#models/user'
+import { DateTime } from 'luxon'
 
 export default class SessionPlayer extends BaseModel {
   @column({ isPrimary: true })
@@ -20,6 +21,9 @@ export default class SessionPlayer extends BaseModel {
 
   @column()
   declare isFinished: boolean
+
+  @column()
+  declare finishedAt: DateTime | null
 
   @belongsTo(() => User, {
     foreignKey: 'userId',

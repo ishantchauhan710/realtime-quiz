@@ -16,19 +16,28 @@ export default function MultiplayerPage() {
   const [players, setPlayers] = useState<any[]>([]);
   const [isHost, setIsHost] = useState(false);
 
-  // 🔹 Load quizzes
+  // LOAD QUIZZES
   useEffect(() => {
     const fetchQuizzes = async () => {
-      const token = getToken();
+      try {
+        console.log("[API] GET /quizzes");
 
-      const res = await fetch(API + "/quizzes", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+        const token = getToken();
 
-      const data = await res.json();
-      setQuizzes(data);
+        const res = await fetch(API + "/quizzes", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const data = await res.json();
+
+        console.log("[API] quizzes loaded", { count: data.length });
+
+        setQuizzes(data);
+      } catch (err) {
+        console.log("[API ERROR] fetchQuizzes", err);
+      }
     };
 
     fetchQuizzes();
@@ -39,12 +48,42 @@ export default function MultiplayerPage() {
     socket.connect();
 
     socket.on("connect", () => {
-      console.log("✅ socket connected");
+      console.log("[WS CONNECT]", { socketId: socket.id });
     });
 
-    // PLAYER UPDATE EVENT
-    socket.on("room:update", (data) => {
-      setPlayers(data.players);
+    socket.on("disconnect", () => {
+      console.log("[WS DISCONNECT]");
+    });
+
+    // ROOM UPDATE
+    socket.on("room_update", (players) => {
+      console.log("[WS EVENT] room_update", players)
+
+      setPlayers(players)
+
+      // find current user
+      const me = players.find((p: any) => p.isHost)
+
+      if (me) {
+        setIsHost(true)
+      } else {
+        setIsHost(false)
+      }
+    })
+
+    // QUIZ STARTED
+    socket.on("quiz_started", ({ sessionId, startTime }) => {
+      console.log("[WS EVENT] quiz_started", {
+        sessionId,
+        startTime,
+      });
+
+      navigate(`/room/${sessionId}`);
+    });
+
+    // ERROR HANDLING
+    socket.on("error", (msg) => {
+      console.log("[WS ERROR]", msg);
     });
 
     return () => {
@@ -52,60 +91,80 @@ export default function MultiplayerPage() {
     };
   }, []);
 
-  // Create room
+  // CREATE ROOM
   const createRoom = async () => {
     if (!selectedQuiz) return;
 
-    const token = getToken();
+    try {
+      console.log("[API] POST /sessions/multiplayer", {
+        quizId: selectedQuiz,
+      });
 
-    const res = await fetch(API + "/sessions/multiplayer", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ quizId: selectedQuiz }),
-    });
+      const token = getToken();
 
-    const data = await res.json();
+      const res = await fetch(API + "/sessions/multiplayer", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ quizId: selectedQuiz }),
+      });
 
-    setSessionId(data.sessionId);
-    setIsHost(true);
+      const data = await res.json();
 
-    // JOIN SOCKET ROOM
-    socket.emit("join_session", data.sessionId);
+      console.log("[API] session created", {
+        sessionId: data.sessionId,
+      });
+
+      setSessionId(data.sessionId);
+      navigate(`/room/${data.sessionId}`)
+      // setIsHost(true);
+
+      console.log("[WS EMIT] join_session", {
+        sessionId: data.sessionId,
+      });
+
+      socket.emit("join_session", { sessionId: data.sessionId });
+    } catch (err) {
+      console.log("[API ERROR] createRoom", err);
+    }
   };
 
-  // Join room
+  // JOIN ROOM
   const joinRoom = async () => {
-    const token = getToken();
+    try {
+      console.log("[API] POST /sessions/:id/join", {
+        sessionId: joinInput,
+      });
 
-    await fetch(API + `/sessions/${joinInput}/join`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+      const token = getToken();
 
-    setSessionId(Number(joinInput));
+      await fetch(API + `/sessions/${joinInput}/join`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-    // JOIN SOCKET ROOM
-    socket.emit("join_session", Number(joinInput));
+      const id = Number(joinInput);
+
+      setSessionId(id);
+
+      navigate(`/room/${id}`)
+      console.log("[WS EMIT] join_session", { sessionId: id });
+
+      socket.emit("join_session", { sessionId: id });
+    } catch (err) {
+      console.log("[API ERROR] joinRoom", err);
+    }
   };
 
-  // Start game
-  const startGame = async () => {
-    const token = getToken();
+  // START GAME (SOCKET ONLY)
+  const startGame = () => {
+    console.log("[WS EMIT] start_quiz", { sessionId });
 
-    await fetch(API + `/sessions/${sessionId}/start`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    // next step later
-    navigate(`/room/${sessionId}`);
+    socket.emit("start_quiz", { sessionId });
   };
 
   return (
@@ -161,7 +220,6 @@ export default function MultiplayerPage() {
           </>
         ) : (
           <>
-            {/* ROOM */}
             <h1 className="text-2xl font-semibold mb-4">
               Room ID: {sessionId}
             </h1>
@@ -176,11 +234,20 @@ export default function MultiplayerPage() {
 
               <div className="space-y-2">
                 {players.map((p) => (
-                  <div
-                    key={p.id}
-                    className="p-3 bg-zinc-900 rounded-lg border border-zinc-700"
-                  >
-                    {p.user.name}
+                  <div className="flex items-center gap-3">
+                    <img
+                      src={
+                        p.profilePictureUrl
+                          ? `http://localhost:3333${p.profilePictureUrl}`
+                          : `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(p.name)}`
+                      }
+                      className="w-8 h-8 rounded-full object-cover"
+                    />
+
+                    <div>
+                      <p className="text-sm font-medium">{p.name}</p>
+                      <p className="text-xs text-gray-400">{p.email}</p>
+                    </div>
                   </div>
                 ))}
               </div>

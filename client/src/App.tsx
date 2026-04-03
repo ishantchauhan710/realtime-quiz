@@ -10,6 +10,7 @@ import QuizStartPage from "./pages/QuizStartPage";
 import SessionPage from "./pages/SessionPage";
 import ResultPage from "./pages/ResultPage";
 import MultiplayerPage from "./pages/MultiplayerPage";
+import RoomPage from "./pages/RoomPage";
 
 export default function App() {
   const [user, setUser] = useState<any>(null);
@@ -96,6 +97,19 @@ export default function App() {
             )
           }
         />
+
+        <Route
+          path="/room/:id"
+          element={
+            user ? (
+              <RoomPage />
+            ) : (
+              <Navigate to="/" replace />
+            )
+          }
+        />
+
+
 
         <Route
           path="/result/:id"

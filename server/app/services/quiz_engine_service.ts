@@ -1,50 +1,48 @@
-// import Session from '#models/session'
-// import SessionPlayer from '#models/session_player'
-// import Question from '#models/question'
-// // import Ws from '#services/ws'
+import Session from '#models/session'
+import SessionPlayer from '#models/session_player'
+import Question from '#models/question'
 
-// export default class QuizEngineService {
+export default class QuizEngineService {
+    async submitAnswer(userId: number, sessionId: number, selectedOption: number) {
+        const session = await Session.findOrFail(sessionId)
 
-//   async submitAnswer(userId: number, sessionId: number, selectedOption: number) {
-//     const session = await Session.findOrFail(sessionId)
+        const player = await SessionPlayer
+            .query()
+            .where('session_id', sessionId)
+            .where('user_id', userId)
+            .firstOrFail()
 
-//     const player = await SessionPlayer
-//       .query()
-//       .where('session_id', sessionId)
-//       .where('user_id', userId)
-//       .firstOrFail()
+        const question = await Question
+            .query()
+            .where('quiz_id', session.quizId)
+            .orderBy('order_index')
+            .offset(player.currentQuestionIndex)
+            .firstOrFail()
 
-//     const question = await Question
-//       .query()
-//       .where('quiz_id', session.quizId)
-//       .orderBy('order_index')
-//       .offset(session.currentQuestionIndex)
-//       .firstOrFail()
+        const isCorrect = question.correctOption === selectedOption
 
-//     const isCorrect = question.correctOption === selectedOption
+        if (isCorrect) {
+            player.score += 10
+        }
 
-//     if (isCorrect) {
-//       player.score += 10
-//     }
+        player.currentQuestionIndex++
 
-//     await player.save()
+        await player.save()
 
-//     // broadcast leaderboard
-//     const players = await SessionPlayer
-//       .query()
-//       .where('session_id', sessionId)
-//       .preload('user')
+        const players = await SessionPlayer
+            .query()
+            .where('session_id', sessionId)
+            .preload('user')
 
-//     const leaderboard = players
-//       .map(p => ({
-//         userId: p.userId,
-//         name: p.user.name,
-//         score: p.score,
-//       }))
-//       .sort((a, b) => b.score - a.score)
+        const leaderboard = players
+            .map(p => ({
+                userId: p.userId,
+                name: p.user.name,
+                score: p.score,
+                isFinished: p.isFinished
+            }))
+            .sort((a, b) => b.score - a.score)
 
-//     // Ws.io!
-//     //   .to(`session:${sessionId}`)
-//     //   .emit('score:update', leaderboard)
-//   }
-// }
+        return { leaderboard }
+    }
+}

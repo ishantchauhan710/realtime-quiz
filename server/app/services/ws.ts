@@ -1,21 +1,21 @@
-// import { Server } from 'socket.io'
-// import server from '@adonisjs/core/services/server'
+import { Server } from 'socket.io'
+import server from '@adonisjs/core/services/server'
 
-// class Ws {
-//   public io: Server | undefined
-//   private booted = false
+class Ws {
+  public io: Server | undefined
+  private booted = false
 
-//   boot() {
-//     if (this.booted) return
+  boot() {
+    if (this.booted) return
 
-//     this.booted = true
+    this.booted = true
 
-//     this.io = new Server(server.getNodeServer(), {
-//       cors: {
-//         origin: '*',
-//       },
-//     })
-//   }
-// }
+    this.io = new Server(server.getNodeServer(), {
+      cors: {
+        origin: '*',
+      },
+    })
+  }
+}
 
-// export default new Ws()
+export default new Ws()
