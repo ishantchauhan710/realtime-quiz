@@ -32,6 +32,61 @@ export class AuthAccessTokenSchema extends BaseModel {
   declare updatedAt: DateTime | null
 }
 
+export class PlayerAnswerSchema extends BaseModel {
+  static $columns = ['answeredAt', 'id', 'isCorrect', 'questionId', 'selectedOption', 'sessionPlayerId', 'timeTaken'] as const
+  $columns = PlayerAnswerSchema.$columns
+  @column.dateTime()
+  declare answeredAt: DateTime | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare isCorrect: boolean
+  @column()
+  declare questionId: number | null
+  @column()
+  declare selectedOption: number
+  @column()
+  declare sessionPlayerId: number | null
+  @column()
+  declare timeTaken: number | null
+}
+
+export class QuestionSchema extends BaseModel {
+  static $columns = ['correctOption', 'createdAt', 'id', 'options', 'orderIndex', 'questionText', 'quizId'] as const
+  $columns = QuestionSchema.$columns
+  @column()
+  declare correctOption: number
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare options: any
+  @column()
+  declare orderIndex: number
+  @column()
+  declare questionText: string
+  @column()
+  declare quizId: number | null
+}
+
+export class QuizSchema extends BaseModel {
+  static $columns = ['createdAt', 'description', 'id', 'timePerQuestion', 'title', 'totalQuestions'] as const
+  $columns = QuizSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare description: string | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare timePerQuestion: number
+  @column()
+  declare title: string
+  @column()
+  declare totalQuestions: number
+}
+
 export class RefreshTokenSchema extends BaseModel {
   static $columns = ['createdAt', 'id', 'token', 'userId'] as const
   $columns = RefreshTokenSchema.$columns
@@ -43,6 +98,52 @@ export class RefreshTokenSchema extends BaseModel {
   declare token: string
   @column()
   declare userId: number | null
+}
+
+export class SessionPlayerSchema extends BaseModel {
+  static $columns = ['currentQuestionIndex', 'finishedAt', 'id', 'isFinished', 'joinedAt', 'score', 'sessionId', 'userId'] as const
+  $columns = SessionPlayerSchema.$columns
+  @column()
+  declare currentQuestionIndex: number | null
+  @column.dateTime()
+  declare finishedAt: DateTime | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare isFinished: boolean | null
+  @column.dateTime()
+  declare joinedAt: DateTime | null
+  @column()
+  declare score: number | null
+  @column()
+  declare sessionId: number | null
+  @column()
+  declare userId: number | null
+}
+
+export class SessionSchema extends BaseModel {
+  static $columns = ['createdAt', 'createdBy', 'currentQuestionIndex', 'endTime', 'id', 'joinCode', 'mode', 'quizId', 'startTime', 'status'] as const
+  $columns = SessionSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare createdBy: number | null
+  @column()
+  declare currentQuestionIndex: number | null
+  @column.dateTime()
+  declare endTime: DateTime | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare joinCode: string | null
+  @column()
+  declare mode: string
+  @column()
+  declare quizId: number | null
+  @column.dateTime()
+  declare startTime: DateTime | null
+  @column()
+  declare status: string | null
 }
 
 export class UserSchema extends BaseModel {
