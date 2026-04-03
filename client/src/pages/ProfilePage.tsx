@@ -2,56 +2,15 @@ import { useEffect, useState } from "react";
 import { getToken, clearToken } from "../lib/auth";
 import PageContainer from "./PageContainer";
 
-export default function Profile({ setUser }: any) {
-  const [user, setLocalUser] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [name, setName] = useState("");
+export default function Profile({ setUser, user: initialUser }: any) {
+  const [user, setLocalUser] = useState<any>(initialUser);
+  const [name, setName] = useState(initialUser?.name || "");
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
   const API = "http://localhost:3333";
 
-  // 🔥 Fetch user
-  const fetchMe = async () => {
-    const token = getToken();
-
-    if (!token) {
-      window.location.href = "/";
-      return;
-    }
-
-    try {
-      const res = await fetch(API + "/me", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        clearToken();
-        window.location.href = "/";
-        return;
-      }
-
-      setLocalUser(data);
-      setUser(data);
-      setName(data.name);
-    } catch {
-      clearToken();
-      window.location.href = "/";
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchMe();
-  }, []);
-
-  // 🔥 Avatar helper
   const getAvatar = () => {
     if (preview) return preview;
 
@@ -116,7 +75,7 @@ export default function Profile({ setUser }: any) {
       if (res.ok) {
         setLocalUser((prev: any) => ({
           ...prev,
-          profilePictureUrl: data.avatar, // ✅ correct
+          profilePictureUrl: data.avatar, // correct
         }));
         setPreview(null); // clear preview after upload
         handleUpdateProfile(); // refresh profile to get new avatar URL
@@ -142,9 +101,6 @@ export default function Profile({ setUser }: any) {
     window.location.href = "/";
   };
 
-  if (loading) {
-    return <div className="text-white text-center mt-20">Loading...</div>;
-  }
 
   return (
     <PageContainer onLogout={handleLogout}>

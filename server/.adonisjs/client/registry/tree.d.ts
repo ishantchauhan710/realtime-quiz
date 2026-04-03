@@ -15,4 +15,11 @@ export interface ApiDefinition {
     redirect: typeof routes['oauth.redirect']
     callback: typeof routes['oauth.callback']
   }
+  quizzes: {
+    store: typeof routes['quizzes.store']
+    index: typeof routes['quizzes.index']
+    show: typeof routes['quizzes.show']
+    update: typeof routes['quizzes.update']
+    destroy: typeof routes['quizzes.destroy']
+  }
 }

@@ -12,7 +12,8 @@ export default function PageContainer({
     const location = useLocation();
 
     const menus = [
-        { label: "Home", path: "/home" },
+        { label: "Solo Play", path: "/home" },
+        { label: "Multiplayer", path: "/multiplayer" },
         { label: "Profile", path: "/profile" },
     ];
 

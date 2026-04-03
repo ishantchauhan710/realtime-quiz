@@ -71,14 +71,18 @@ export class QuestionSchema extends BaseModel {
 }
 
 export class QuizSchema extends BaseModel {
-  static $columns = ['createdAt', 'description', 'id', 'timePerQuestion', 'title', 'totalQuestions'] as const
+  static $columns = ['createdAt', 'createdBy', 'description', 'id', 'isDefault', 'timePerQuestion', 'title', 'totalQuestions'] as const
   $columns = QuizSchema.$columns
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime | null
   @column()
+  declare createdBy: number | null
+  @column()
   declare description: string | null
   @column({ isPrimary: true })
   declare id: number
+  @column()
+  declare isDefault: boolean | null
   @column()
   declare timePerQuestion: number
   @column()

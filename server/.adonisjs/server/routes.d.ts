@@ -13,16 +13,25 @@ export type ScannedRoutes = {
     'auth.me': { paramsTuple?: []; params?: {} }
     'auth.update_profile': { paramsTuple?: []; params?: {} }
     'auth.upload_avatar': { paramsTuple?: []; params?: {} }
+    'quizzes.store': { paramsTuple?: []; params?: {} }
+    'quizzes.index': { paramsTuple?: []; params?: {} }
+    'quizzes.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'quizzes.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'quizzes.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   GET: {
     'oauth.redirect': { paramsTuple?: []; params?: {} }
     'oauth.callback': { paramsTuple?: []; params?: {} }
     'auth.me': { paramsTuple?: []; params?: {} }
+    'quizzes.index': { paramsTuple?: []; params?: {} }
+    'quizzes.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   HEAD: {
     'oauth.redirect': { paramsTuple?: []; params?: {} }
     'oauth.callback': { paramsTuple?: []; params?: {} }
     'auth.me': { paramsTuple?: []; params?: {} }
+    'quizzes.index': { paramsTuple?: []; params?: {} }
+    'quizzes.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   POST: {
     'auth.register': { paramsTuple?: []; params?: {} }
@@ -30,9 +39,14 @@ export type ScannedRoutes = {
     'auth.refresh': { paramsTuple?: []; params?: {} }
     'auth.logout': { paramsTuple?: []; params?: {} }
     'auth.upload_avatar': { paramsTuple?: []; params?: {} }
+    'quizzes.store': { paramsTuple?: []; params?: {} }
   }
   PUT: {
     'auth.update_profile': { paramsTuple?: []; params?: {} }
+    'quizzes.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+  }
+  DELETE: {
+    'quizzes.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
 }
 declare module '@adonisjs/core/types/http' {

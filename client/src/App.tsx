@@ -74,7 +74,7 @@ export default function App() {
           path="/profile"
           element={
             user ? (
-              <Profile setUser={setUser} />
+              <Profile setUser={setUser} user={user} />
             ) : (
               <Navigate to="/" replace />
             )

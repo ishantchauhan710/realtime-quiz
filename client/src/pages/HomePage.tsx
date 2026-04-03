@@ -6,125 +6,8 @@ export default function Home({ setUser }: any) {
   const [user, setLocalUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [name, setName] = useState("");
-  const [file, setFile] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string | null>(null);
-  const [saving, setSaving] = useState(false);
 
   const API = "http://localhost:3333";
-
-  // 🔥 Fetch user
-  const fetchMe = async () => {
-    const token = getToken();
-
-    if (!token) {
-      window.location.href = "/";
-      return;
-    }
-
-    try {
-      const res = await fetch(API + "/me", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        clearToken();
-        window.location.href = "/";
-        return;
-      }
-
-      setLocalUser(data);
-      setUser(data);
-      setName(data.name);
-    } catch {
-      clearToken();
-      window.location.href = "/";
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchMe();
-  }, []);
-
-  // 🔥 Avatar helper
-  const getAvatar = () => {
-    if (preview) return preview;
-
-    if (!user?.profilePictureUrl) {
-      return `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(
-        user?.name || "User"
-      )}`;
-    }
-
-    return user.profilePictureUrl.startsWith("http")
-      ? user.profilePictureUrl
-      : `${API}${user.profilePictureUrl}`;
-  };
-
-
-  const handleUpdateProfile = async () => {
-    const token = getToken();
-    setSaving(true);
-
-    try {
-      const res = await fetch(API + "/profile", {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ name }),
-      });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        setLocalUser(data.user);
-        setUser(data.user);
-      }
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  // 🖼️ Upload avatar
-  const handleUploadAvatar = async () => {
-    if (!file) return;
-
-    const token = getToken();
-    const formData = new FormData();
-    formData.append("avatar", file);
-
-    setSaving(true);
-
-    try {
-      const res = await fetch(API + "/profile/avatar", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formData,
-      });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        setLocalUser((prev: any) => ({
-          ...prev,
-          profilePictureUrl: data.avatar, // ✅ correct
-        }));
-        setPreview(null); // clear preview after upload
-        handleUpdateProfile(); // refresh profile to get new avatar URL
-      }
-    } finally {
-      setSaving(false);
-    }
-  };
 
   // 🔐 Logout
   const handleLogout = async () => {
@@ -142,15 +25,12 @@ export default function Home({ setUser }: any) {
     window.location.href = "/";
   };
 
-  if (loading) {
-    return <div className="text-white text-center mt-20">Loading...</div>;
-  }
 
   return (
     <PageContainer onLogout={handleLogout}>
       <div className="mb-8">
-        <h1 className="text-3xl font-semibold">Home</h1>
-        <p className="text-gray-400 text-sm">Play Quiz</p>
+        <h1 className="text-3xl font-semibold">Play Solo</h1>
+        <p className="text-gray-400 text-sm">Test your knowledge with different quizzes</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
