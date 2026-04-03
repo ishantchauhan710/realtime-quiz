@@ -127,7 +127,7 @@ export default class SessionService {
       .preload('user')
       .firstOrFail()
 
-      console.log('Player found:', player)
+    console.log('Player found:', player)
 
     if (!player.isFinished) {
       throw new Error('Session not finished yet')
@@ -240,16 +240,36 @@ export default class SessionService {
     }
 
     session.status = 'active'
-    session.startTime = DateTime.now().toISO().plus({ seconds: 5 }) // sync start
+    session.startTime = DateTime.now().plus({ seconds: 5 }).toISO()
 
     await session.save()
 
-    // Start the quiz for all players in the session
-    // Ws.io!
-    //   .to(`session:${sessionId}`)
-    //   .emit('quiz:start', {
-    //     startTime: session.startTime,
-    //   })
+
+    return session
+  }
+
+  async createMatchmakingSession(userIds: number[], quizId: number) {
+    const quiz = await Quiz.findOrFail(quizId)
+
+    const session = await Session.create({
+      quizId: quiz.id,
+      mode: 'multiplayer',
+      status: 'waiting',
+      createdBy: userIds[0], // first player = host
+      currentQuestionIndex: 0,
+    })
+
+    await Promise.all(
+      userIds.map(userId =>
+        SessionPlayer.create({
+          sessionId: session.id,
+          userId,
+          score: 0,
+          currentQuestionIndex: 0,
+          isFinished: false,
+        })
+      )
+    )
 
     return session
   }

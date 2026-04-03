@@ -23,7 +23,7 @@ export default class SessionPlayer extends BaseModel {
   declare isFinished: boolean
 
   @column()
-  declare finishedAt: string
+  declare finishedAt: string | null
 
   @column()
   declare answeredAt: string

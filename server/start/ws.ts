@@ -6,8 +6,12 @@ import SessionPlayer from '#models/session_player'
 import Session from '#models/session'
 import Question from '#models/question'
 import { DateTime } from 'luxon'
+import MatchmakingService from '#services/matchmaking_service'
+import SessionService from '#services/session_service'
 
 const quizEngine = new QuizEngineService()
+const matchmakingService = new MatchmakingService()
+const sessionService = new SessionService()
 
 function formatPlayers(players: any[], hostId: number) {
   return players.map((p) => ({
@@ -147,9 +151,54 @@ async function sendQuestionToPlayer(socket: any, sessionPlayer: any) {
   }, Math.max(0, delay))
 }
 
+
 app.ready(() => {
   Ws.boot()
   const io = Ws.io!
+
+  setInterval(async () => {
+    const allQuizzes = matchmakingService.getAllQuizIds()
+
+    for (const quizId of allQuizzes) {
+      const match = matchmakingService.popPlayers(quizId)
+
+      if (!match) continue
+
+      const session = await sessionService.createMatchmakingSession(
+        match.map(p => p.userId),
+        quizId
+      )
+
+      match.forEach((p) => {
+        const playerSocket = [...io.sockets.sockets.values()]
+          .find((s: any) => s.id === p.socketId)
+
+        if (playerSocket) {
+          playerSocket.join(`session:${session.id}`)
+        }
+
+        io.to(p.socketId).emit("match_found", {
+          sessionId: session.id
+        })
+      })
+
+      // send room update
+      const players = await SessionPlayer.query()
+        .where('session_id', session.id)
+        .preload('user')
+
+      io.to(`session:${session.id}`).emit(
+        'room_update',
+        formatPlayers(players, session.createdBy)
+      )
+    }
+  }, 5000)
+
+  setInterval(() => {
+    const count = matchmakingService.getCount()
+    io.emit("lobby_update", { count })
+    console.log('Lobby count:', count)
+  }, 2000)
 
   io.use((socket: any, next: any) => {
     try {
@@ -271,5 +320,22 @@ app.ready(() => {
         await sendQuestionToPlayer(socket, freshPlayer)
       }
     )
+
+    socket.on(
+      "join_lobby",
+      async ({ quizId }: { quizId: number }) => {
+        console.log('User joining lobby for quiz', quizId, 'socket id', socket.id, 'user id', userId)
+
+        matchmakingService.addPlayer(
+          userId,
+          socket.id,
+          quizId
+        )
+
+        socket.emit("lobby_waiting")
+      }
+    )
+
+
   })
 })

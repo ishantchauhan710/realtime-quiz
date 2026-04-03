@@ -93,6 +93,7 @@ export default function RoomPage() {
 
         // When a player joins, update the player list in the room
         socket.on("room_update", (_players) => {
+            if(!_players || _players.length === 0) return
             setPlayers(_players)
             setLeaderboard(_players.map((p: any) => (
                 {

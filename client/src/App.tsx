@@ -12,6 +12,7 @@ import ResultPage from "./pages/ResultPage";
 import MultiplayerPage from "./pages/MultiplayerPage";
 import RoomPage from "./pages/RoomPage";
 import Leaderboard from "./pages/LeaderboardPage";
+import LobbyPage from "./pages/LobbyPage";
 
 export default function App() {
   const [user, setUser] = useState<any>(null);
@@ -81,6 +82,18 @@ export default function App() {
           element={
             user ? (
               <Leaderboard user={user} setUser={setUser} />
+            ) : (
+              <Navigate to="/" replace />
+            )
+          }
+        />
+
+
+        <Route
+          path="/lobby"
+          element={
+            user ? (
+              <LobbyPage/>
             ) : (
               <Navigate to="/" replace />
             )
