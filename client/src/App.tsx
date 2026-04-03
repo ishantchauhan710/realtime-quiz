@@ -11,6 +11,7 @@ import SessionPage from "./pages/SessionPage";
 import ResultPage from "./pages/ResultPage";
 import MultiplayerPage from "./pages/MultiplayerPage";
 import RoomPage from "./pages/RoomPage";
+import Leaderboard from "./pages/LeaderboardPage";
 
 export default function App() {
   const [user, setUser] = useState<any>(null);
@@ -69,6 +70,17 @@ export default function App() {
           element={
             user ? (
               <Home setUser={setUser} />
+            ) : (
+              <Navigate to="/" replace />
+            )
+          }
+        />
+
+        <Route
+          path="/leaderboard"
+          element={
+            user ? (
+              <Leaderboard user={user} setUser={setUser} />
             ) : (
               <Navigate to="/" replace />
             )

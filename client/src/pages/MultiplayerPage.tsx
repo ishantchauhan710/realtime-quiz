@@ -87,7 +87,11 @@ export default function MultiplayerPage() {
     });
 
     return () => {
-      socket.disconnect();
+      socket.off("connect");
+      socket.off("disconnect");
+      socket.off("room_update");
+      socket.off("quiz_started");
+      socket.off("error");
     };
   }, []);
 
@@ -117,15 +121,20 @@ export default function MultiplayerPage() {
         sessionId: data.sessionId,
       });
 
+
+      socket.emit("join_session", { sessionId: data.sessionId });
+
       setSessionId(data.sessionId);
+      // navigate(`/room/${data.sessionId}`)
+
       navigate(`/room/${data.sessionId}`)
+
       // setIsHost(true);
 
       console.log("[WS EMIT] join_session", {
         sessionId: data.sessionId,
       });
 
-      socket.emit("join_session", { sessionId: data.sessionId });
     } catch (err) {
       console.log("[API ERROR] createRoom", err);
     }
@@ -150,11 +159,11 @@ export default function MultiplayerPage() {
       const id = Number(joinInput);
 
       setSessionId(id);
+      socket.emit("join_session", { sessionId: id });
 
       navigate(`/room/${id}`)
       console.log("[WS EMIT] join_session", { sessionId: id });
 
-      socket.emit("join_session", { sessionId: id });
     } catch (err) {
       console.log("[API ERROR] joinRoom", err);
     }

@@ -29,6 +29,7 @@ async function finishQuiz(io: any, sessionId: number) {
     .map((p) => ({
       userId: p.userId,
       name: p.user.name,
+      profilePictureUrl: p.user.profilePictureUrl,
       score: p.score,
       finishedAt: p.finishedAt,
     }))
@@ -36,18 +37,36 @@ async function finishQuiz(io: any, sessionId: number) {
       if (b.score !== a.score) return b.score - a.score
 
       if (a.finishedAt && b.finishedAt) {
-        return a?.finishedAt?.toMillis() - b?.finishedAt?.toMillis()
+        return (
+          DateTime.fromISO(a.finishedAt).toMillis() -
+          DateTime.fromISO(b.finishedAt).toMillis()
+        )
       } else if (a.finishedAt) return -1
       else if (b.finishedAt) return 1
       else return 0
     })
 
+  const winner = leaderboard[0]
+
+  // TODO: This can be optimized by doing a single query to update all users at once instead of looping and saving each one but currently due to time constraints I'm doing it this way
+  for (const player of players) {
+    const user = player.user
+
+    user.gamesPlayedMulti += 1
+
+    if (player.userId === winner.userId) {
+      user.totalWinsMulti += 1
+    }
+
+    await user.save()
+  }
+
+  // EMIT FINAL RESULT
   io.to(`session:${sessionId}`).emit('quiz_finished', {
-    winner: leaderboard[0],
+    winner,
     leaderboard,
   })
 }
-
 async function checkAndFinishQuiz(io: any, sessionId: number) {
   const players = await SessionPlayer.query().where('session_id', sessionId)
 
@@ -68,7 +87,7 @@ async function sendQuestionToPlayer(socket: any, sessionPlayer: any) {
     .first()
 
   if (!question) {
-    sessionPlayer.finishedAt = DateTime.now().toISO().toISO()
+    sessionPlayer.finishedAt = DateTime.now().toISO()
     await sessionPlayer.save()
 
     socket.emit('quiz_completed')

@@ -14,6 +14,7 @@ export default function PageContainer({
     const menus = [
         { label: "Solo Play", path: "/home" },
         { label: "Multiplayer", path: "/multiplayer" },
+        { label: "Leaderboard", path: "/leaderboard" },
         { label: "Profile", path: "/profile" },
     ];
 
