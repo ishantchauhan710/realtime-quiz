@@ -32,6 +32,7 @@ export default function RoomPage() {
     const [timeLeft, setTimeLeft] = useState(10)
     const [leaderboard, setLeaderboard] = useState<any[]>([])
     const [updates, setUpdates] = useState([] as any[])
+    const [quizCompleted, setQuizCompleted] = useState(false)
 
     let timer: any = null
 
@@ -174,7 +175,7 @@ export default function RoomPage() {
 
                     socket.emit("submit_answer", {
                         sessionId,
-                        selectedOption: null, 
+                        selectedOption: null,
                     })
                 }
             }, 1000)
@@ -182,7 +183,7 @@ export default function RoomPage() {
 
         // Quiz completed, navigate to results page
         socket.on("quiz_completed", () => {
-            navigate("/results/" + sessionId)
+            setQuizCompleted(true)
         })
 
         return () => {
@@ -225,6 +226,19 @@ export default function RoomPage() {
         return "bg-zinc-900 border-zinc-700 opacity-50";
     };
 
+    const handleEndQuiz = () => {
+        if (!quizCompleted) {
+            const confirmEnd = window.confirm("Are you sure you want to end the quiz?")
+            if (confirmEnd) {
+                socket.emit("end_quiz", { sessionId })
+                setQuizCompleted(true)
+                navigate(`/home`)
+            }
+        } else {
+            navigate(`/home`)
+        }
+    }
+
 
     // ================= UI =================
 
@@ -242,6 +256,7 @@ export default function RoomPage() {
         <PageContainer>
             {quizStarted && (
                 <>
+                    {/* NOTIFICATIONS */}
                     <div className="fixed top-5 left-1/2 -translate-x-1/2 space-y-2 z-50">
                         {updates.map((u) => (
                             <div
@@ -254,9 +269,9 @@ export default function RoomPage() {
                             </div>
                         ))}
                     </div>
-                    <div className="grid grid-cols-2">
+                    <div className={quizCompleted ? "grid grid-cols-1 gap-10" : "grid grid-cols-2 gap-10"}>
                         {/* QUIZ */}
-                        <div className="w-full mx-auto">
+                        {!quizCompleted && (<div className="w-full mx-auto">
 
                             {/* HEADER */}
                             {!error && (
@@ -300,10 +315,10 @@ export default function RoomPage() {
                                     </div>
                                 </div>
                             )}
-                        </div>
+                        </div>)}
 
                         {/* LEADERBOARD */}
-                        <div className="max-w-md mx-auto">
+                        <div className="w-full mx-auto">
                             <h2 className="text-lg font-semibold mb-4">Leaderboard - {leaderboard?.length}</h2>
 
                             <div className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden">
@@ -346,6 +361,12 @@ export default function RoomPage() {
                                 )}
 
 
+                            </div>
+
+                            <div className="flex items-center justify-center mt-4">
+                                <button onClick={() => handleEndQuiz()} className={quizCompleted ? "bg-green-500 text-white px-3 py-3 rounded-md cursor-pointer hover:bg-green-600" : "bg-red-500 text-white px-3 py-3 rounded-md cursor-pointer hover:bg-red-600"}>
+                                    {quizCompleted ? "Go To Home" : "End Quiz"}
+                                </button>
                             </div>
 
                         </div>
