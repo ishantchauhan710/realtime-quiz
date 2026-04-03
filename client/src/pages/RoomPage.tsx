@@ -171,6 +171,11 @@ export default function RoomPage() {
 
                 if (time <= 0) {
                     clearInterval(timer)
+
+                    socket.emit("submit_answer", {
+                        sessionId,
+                        selectedOption: null, 
+                    })
                 }
             }, 1000)
         })

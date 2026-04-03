@@ -25,7 +25,14 @@ export default class QuizEngineService {
             .offset(player.currentQuestionIndex)
             .firstOrFail()
 
-        const isCorrect = question.correctOption === selectedOption
+        let isCorrect = false;
+
+        if (selectedOption === null) {
+            // treat unanswered as incorrect
+            isCorrect = false;
+        } else if (selectedOption === question.correctOption) {
+            isCorrect = true;
+        }
 
         if (isCorrect) {
             player.score += 10

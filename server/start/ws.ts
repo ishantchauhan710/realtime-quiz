@@ -72,15 +72,9 @@ async function sendQuestionToPlayer(socket: any, sessionPlayer: any) {
     await sessionPlayer.save()
 
     socket.emit('quiz_completed')
-
     await checkAndFinishQuiz(socket.server, session.id)
     return
   }
-
-  // sessionPlayer.answeredAt = null
-  // await sessionPlayer.save()
-
-  console.log('Sending new question to user', sessionPlayer.userId, 'for session', session.id, 'Question ID:', question.id)
 
   const duration = 10
 
@@ -88,8 +82,22 @@ async function sendQuestionToPlayer(socket: any, sessionPlayer: any) {
     question,
     index: sessionPlayer.currentQuestionIndex,
     duration,
-    // correctOption: question.correctOption, // TODO: Remove this in production
   })
+
+  setTimeout(async () => {
+    console.log('Timer expired for user', duration, 'seconds')
+    const freshPlayer = await SessionPlayer.query()
+      .where('session_id', session.id)
+      .andWhere('user_id', sessionPlayer.userId)
+      .first()
+
+    // prevent double execution (if already answered)
+    if (!freshPlayer || freshPlayer.answeredAt) return
+
+    console.log("Time up; auto next question")
+
+    await sendQuestionToPlayer(socket, freshPlayer)
+  }, (duration + 1) * 1000)
 }
 
 app.ready(() => {
