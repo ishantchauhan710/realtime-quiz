@@ -223,4 +223,52 @@ export interface Registry {
       errorResponse: unknown
     }
   }
+  'session.create_multiplayer': {
+    methods: ["POST"]
+    pattern: '/sessions/multiplayer'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'session.join': {
+    methods: ["POST"]
+    pattern: '/sessions/:id/join'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'session.get_session': {
+    methods: ["GET","HEAD"]
+    pattern: '/sessions/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'session.start': {
+    methods: ["POST"]
+    pattern: '/sessions/:id/start'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
 }

@@ -114,6 +114,30 @@ const routes = {
     tokens: [{"old":"/sessions/:id/result","type":0,"val":"sessions","end":""},{"old":"/sessions/:id/result","type":1,"val":"id","end":""},{"old":"/sessions/:id/result","type":0,"val":"result","end":""}],
     types: placeholder as Registry['session.get_result']['types'],
   },
+  'session.create_multiplayer': {
+    methods: ["POST"],
+    pattern: '/sessions/multiplayer',
+    tokens: [{"old":"/sessions/multiplayer","type":0,"val":"sessions","end":""},{"old":"/sessions/multiplayer","type":0,"val":"multiplayer","end":""}],
+    types: placeholder as Registry['session.create_multiplayer']['types'],
+  },
+  'session.join': {
+    methods: ["POST"],
+    pattern: '/sessions/:id/join',
+    tokens: [{"old":"/sessions/:id/join","type":0,"val":"sessions","end":""},{"old":"/sessions/:id/join","type":1,"val":"id","end":""},{"old":"/sessions/:id/join","type":0,"val":"join","end":""}],
+    types: placeholder as Registry['session.join']['types'],
+  },
+  'session.get_session': {
+    methods: ["GET","HEAD"],
+    pattern: '/sessions/:id',
+    tokens: [{"old":"/sessions/:id","type":0,"val":"sessions","end":""},{"old":"/sessions/:id","type":1,"val":"id","end":""}],
+    types: placeholder as Registry['session.get_session']['types'],
+  },
+  'session.start': {
+    methods: ["POST"],
+    pattern: '/sessions/:id/start',
+    tokens: [{"old":"/sessions/:id/start","type":0,"val":"sessions","end":""},{"old":"/sessions/:id/start","type":1,"val":"id","end":""},{"old":"/sessions/:id/start","type":0,"val":"start","end":""}],
+    types: placeholder as Registry['session.start']['types'],
+  },
 } as const satisfies Record<string, AdonisEndpoint>
 
 export { routes }

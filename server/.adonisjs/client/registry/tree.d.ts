@@ -27,5 +27,9 @@ export interface ApiDefinition {
     getQuestion: typeof routes['session.get_question']
     submitAnswer: typeof routes['session.submit_answer']
     getResult: typeof routes['session.get_result']
+    createMultiplayer: typeof routes['session.create_multiplayer']
+    join: typeof routes['session.join']
+    getSession: typeof routes['session.get_session']
+    start: typeof routes['session.start']
   }
 }

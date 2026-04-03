@@ -22,6 +22,10 @@ export type ScannedRoutes = {
     'session.get_question': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'session.submit_answer': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'session.get_result': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'session.create_multiplayer': { paramsTuple?: []; params?: {} }
+    'session.join': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'session.get_session': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'session.start': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   GET: {
     'oauth.redirect': { paramsTuple?: []; params?: {} }
@@ -31,6 +35,7 @@ export type ScannedRoutes = {
     'quizzes.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'session.get_question': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'session.get_result': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'session.get_session': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   HEAD: {
     'oauth.redirect': { paramsTuple?: []; params?: {} }
@@ -40,6 +45,7 @@ export type ScannedRoutes = {
     'quizzes.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'session.get_question': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'session.get_result': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'session.get_session': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   POST: {
     'auth.register': { paramsTuple?: []; params?: {} }
@@ -50,6 +56,9 @@ export type ScannedRoutes = {
     'quizzes.store': { paramsTuple?: []; params?: {} }
     'session.create_solo': { paramsTuple?: []; params?: {} }
     'session.submit_answer': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'session.create_multiplayer': { paramsTuple?: []; params?: {} }
+    'session.join': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'session.start': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   PUT: {
     'auth.update_profile': { paramsTuple?: []; params?: {} }

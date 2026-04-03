@@ -29,10 +29,21 @@ router.group(() => {
   router.put('/quizzes/:id', '#controllers/quizzes_controller.update')
   router.delete('/quizzes/:id', '#controllers/quizzes_controller.destroy')
 
+  // Solo
   router.post('/sessions/solo', '#controllers/session_controller.createSolo')
+
+  // Gameplay
   router.get('/sessions/:id/question', '#controllers/session_controller.getQuestion')
   router.post('/sessions/:id/answer', '#controllers/session_controller.submitAnswer')
   router.get('/sessions/:id/result', '#controllers/session_controller.getResult')
+
+  // Multiplayer
+  router.post('/sessions/multiplayer', '#controllers/session_controller.createMultiplayer')
+  router.post('/sessions/:id/join', '#controllers/session_controller.join')
+  router.get('/sessions/:id', '#controllers/session_controller.getSession')
+  router.post('/sessions/:id/start', '#controllers/session_controller.start')
+
+
 
 }).use(jwt.handle)
 
