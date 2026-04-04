@@ -3,7 +3,6 @@ import SessionPlayer from '#models/session_player'
 import Quiz from '#models/quiz'
 import Question from '#models/question'
 import { DateTime } from 'luxon'
-import Ws from '#services/ws'
 
 export default class SessionService {
 

@@ -1,15 +1,15 @@
 import app from '@adonisjs/core/services/app'
 import Ws from '#services/ws'
 import { verifyAccessToken } from '#services/jwt_service'
-import QuizEngineService from '#services/quiz_engine_service'
 import SessionPlayer from '#models/session_player'
 import Session from '#models/session'
 import Question from '#models/question'
 import { DateTime } from 'luxon'
 import MatchmakingService from '#services/matchmaking_service'
 import SessionService from '#services/session_service'
+import QuizService from '#services/quiz_service'
 
-const quizEngine = new QuizEngineService()
+const quizService = new QuizService()
 const matchmakingService = new MatchmakingService()
 const sessionService = new SessionService()
 
@@ -261,7 +261,7 @@ app.ready(() => {
         selectedOption: number
       }) => {
 
-        const result = await quizEngine.submitAnswer(
+        const result = await quizService.submitAnswer(
           userId,
           sessionId,
           selectedOption

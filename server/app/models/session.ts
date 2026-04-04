@@ -23,10 +23,10 @@ export default class Session extends BaseModel {
   @column()
   declare currentQuestionIndex: number
 
-  @column.dateTime()
+  @column()
   declare startTime: string
 
-  @column.dateTime()
+  @column()
   declare endTime: string
 
   @column.dateTime({ autoCreate: true })

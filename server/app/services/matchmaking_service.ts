@@ -6,13 +6,12 @@ export default class MatchmakingService {
   }[] = []
 
   addPlayer(userId: number, socketId: string, quizId: number) {
-    // ❗ prevent duplicate
     const exists = this.queue.find(p => p.userId === userId)
     if (exists) return
 
     this.queue.push({ userId, socketId, quizId })
 
-    console.log("QUEUE AFTER ADD:", this.queue) // 👈 debug
+    console.log("QUEUE AFTER ADD:", this.queue)
   }
 
   getCount() {
