@@ -93,7 +93,7 @@ export default function RoomPage() {
 
         // When a player joins, update the player list in the room
         socket.on("room_update", (_players) => {
-            if(!_players || _players.length === 0) return
+            if (!_players || _players.length === 0) return
             setPlayers(_players)
             setLeaderboard(_players.map((p: any) => (
                 {
@@ -370,7 +370,11 @@ export default function RoomPage() {
                                         >
                                             <div className="col-span-6 flex items-center gap-3">
                                                 <img
-                                                    src={API + p.profilePictureUrl}
+                                                    src={
+                                                        p.profilePictureUrl
+                                                            ? `http://localhost:3333${p.profilePictureUrl}`
+                                                            : `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(p.name)}`
+                                                    }
                                                     alt={p.name}
                                                     className="w-8 h-8 object-cover rounded-full"
                                                 />

@@ -7,7 +7,7 @@ export default function LobbyPage() {
   const navigate = useNavigate()
 
   const [count, setCount] = useState(0)
-  const [status, setStatus] = useState("Joining lobby...")
+  const [status, setStatus] = useState("Joining lobby... If queue count doesn't update, a quick refresh usually fixes it.")
 
   useEffect(() => {
     socket.connect()
