@@ -35,6 +35,10 @@ This project supports **synchronized gameplay**, **live score updates**, and **d
 * Each user can create and update custom quizzes
 * Those quizzes can be used in solo vs multiplayer sessions
 
+### 🎮 Test Cases (BONUS 3)
+* Auth API Test Cases: tests/functional/auth.spec.ts
+* Quiz API Test Cases: tests/functional/quiz.spec.ts
+
 
 ## ✅ Deliverables
 * GitHub repository with meaningful committ messages and branches
