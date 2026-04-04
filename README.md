@@ -150,6 +150,10 @@ GOOGLE_CLIENT_ID=PASTE_HERE
 GOOGLE_CLIENT_SECRET=PASTE_HERE
 
 ```
+
+* Set JWT_SECRET and JWT_REFRESH_SECRET to any random string
+* GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET you need to get from google cloud console
+
 ## ⚠️ Limitations & Future Improvements
 
 Due to time constraints, some edge cases and optimizations were not fully implemented. However, I am aware of these areas and how they can be improved:
