@@ -145,17 +145,17 @@ Lot of race conditions / rapid click bugs were handled
       * Broadcasts via `score_update`
       * Players see live ranking changes during gameplay
 
-🗄️ Why I Used SQLite?
+## 🗄️ Why I Used SQLite?
 
 SQLite was chosen as the database for this project primarily beacuse it was default AdonisJS DB and is easy to setup. Since the focus of this assignment is on backend design, real-time synchronization, and game state management, SQLite allowed for rapid development without the overhead of configuring and managing a separate database server.
 
-⚖️ Tradeoffs
+## ⚖️ Tradeoffs
 
 Limited support for high concurrency and parallel writes
 Not suitable for horizontally scalable or distributed systems
 Performance may degrade under heavy real-time load
 
-🚀 Production Consideration
+## 🚀 Production Consideration
 
 For a production-grade system, I would switch to PostgreSQL, as it offers:
 
