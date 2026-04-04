@@ -5,6 +5,23 @@ This project supports **synchronized gameplay**, **live score updates**, and **d
 
 ---
 
+## Screenshots
+
+|                                      |                                      |
+| ---------------------------------------------- | ---------------------------------------------- |
+| ![](./screenshots/app/Screenshot%20\(3\).png)  | ![](./screenshots/app/Screenshot%20\(4\).png)  |
+| ![](./screenshots/app/Screenshot%20\(5\).png)  | ![](./screenshots/app/Screenshot%20\(6\).png)  |
+| ![](./screenshots/app/Screenshot%20\(7\).png)  | ![](./screenshots/app/Screenshot%20\(8\).png)  |
+| ![](./screenshots/app/Screenshot%20\(9\).png)  | ![](./screenshots/app/Screenshot%20\(10\).png) |
+| ![](./screenshots/app/Screenshot%20\(11\).png) | ![](./screenshots/app/Screenshot%20\(12\).png) |
+| ![](./screenshots/app/Screenshot%20\(13\).png) | ![](./screenshots/app/Screenshot%20\(14\).png) |
+| ![](./screenshots/app/Screenshot%20\(15\).png) | ![](./screenshots/app/Screenshot%20\(16\).png) |
+| ![](./screenshots/app/Screenshot%20\(17\).png) | ![](./screenshots/app/Screenshot%20\(18\).png) |
+| ![](./screenshots/app/Screenshot%20\(23\).png) | ![](./screenshots/app/Screenshot%20\(20\).png) |
+| ![](./screenshots/app/Screenshot%20\(21\).png) | ![](./screenshots/app/Screenshot%20\(22\).png)                                      
+
+
+
 ## 🚀 Feature Completeness
 
 ### 🔐 Authentication
@@ -133,7 +150,6 @@ GOOGLE_CLIENT_ID=PASTE_HERE
 GOOGLE_CLIENT_SECRET=PASTE_HERE
 
 ```
-
 ## ⚠️ Limitations & Future Improvements
 
 Due to time constraints, some edge cases and optimizations were not fully implemented. However, I am aware of these areas and how they can be improved:

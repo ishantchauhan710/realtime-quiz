@@ -172,13 +172,13 @@ export default function Auth({ setUser }: any) {
           Continue with Google
         </button>
 
-        <button
+        {/* <button
           onClick={handleGuestLogin}
           disabled={loading}
           className="w-full mt-3 text-gray-300 hover:text-white disabled:opacity-50"
         >
           {loading ? "Loading..." : "Play as Guest"}
-        </button>
+        </button> */}
 
         <p className="text-gray-400 text-center mt-6">
           {isLogin ? "Don't have an account?" : "Already have an account?"}
