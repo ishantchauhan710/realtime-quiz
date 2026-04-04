@@ -5,6 +5,13 @@ This project supports **synchronized gameplay**, **live score updates**, and **d
 
 ---
 
+## 🎥 Demo Video
+
+[![Watch the demo](https://img.youtube.com/vi/FPvl1NXpCpw/maxresdefault.jpg)](https://www.youtube.com/watch?v=FPvl1NXpCpw)
+
+👉 Click the image above to watch the full demo.
+
+
 ## Screenshots
 
 |                                      |                                      |
