@@ -40,8 +40,8 @@ This project supports **synchronized gameplay**, **live score updates**, and **d
 * GitHub repository with meaningful committ messages and branches
 * Web UI made using ReactJS
 * README.md
-* Problems & Solutions document [Link]
-* Postman Collection [Link]
+* Problems & Solutions: [View](https://github.com/ishantchauhan710/realtime-quiz/blob/main/ProblemsSolutions.md)
+* Postman Collection: [Open](https://.postman.co/workspace/My-Workspace~a63831ce-52af-4eea-84fc-3f9941ece80a/collection/13582586-ef9ab34d-9f0e-4af0-a4b2-4c8a69c02fcd?action=share&creator=13582586)
 
 ## 🚀 Architecture
 
