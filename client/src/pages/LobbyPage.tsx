@@ -22,7 +22,7 @@ export default function LobbyPage() {
     })
 
     socket.on("lobby_waiting", () => {
-      setStatus("Waiting for players...")
+      setStatus("Waiting for players. If no one shows up, a quick refresh usually fixes it.");
     })
 
     socket.on("match_found", ({ sessionId }) => {

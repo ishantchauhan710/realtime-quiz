@@ -360,7 +360,7 @@ export default function RoomPage() {
 
                                 {leaderboard?.length === 0 ? (
                                     <div className="p-4 text-sm text-gray-400">
-                                        Waiting for players to join...
+                                        Waiting for players. If no one shows up, a quick refresh usually fixes it.
                                     </div>
                                 ) : (
                                     leaderboard?.map((p) => (
@@ -432,7 +432,7 @@ export default function RoomPage() {
 
                             {players?.length === 0 ? (
                                 <div className="p-4 text-sm text-gray-400">
-                                    Waiting for players to join...
+                                    Waiting for players. If no one shows up, a quick refresh usually fixes it.
                                 </div>
                             ) : (
                                 players?.map((p) => (
